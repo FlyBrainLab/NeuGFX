@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>NeuGFX Test Site</title>
+  <script src=" https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.min.js"></script>
+  <script src="./lib/neuGFX.min.js"> </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id = "fbl-gfx-navbar">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                File
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Display Options</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Relayout</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Maximize</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="plotter-toggle" href="#">Toggle Plotter</a>
+                </li>
+          </ul>
+        </div>
+      </nav>
+
+
+  <div class="fbl-gfx-container">
+    <div id="fbl-vis-gfx" class="vis-gfx"></div>
+  </div>
+  <div class="fbl-plotter-container">
+    <div class="fbl-gfx_container align-items-center">
+      <div class="plotinfo_div col-md-2">
+        <form>
+          <input type="text" placeholder="Search" id="plot_search" class="search_bar" autocomplete="off">
+        </form>
+        <div id="plot_list" class="list_container" align="left">
+        </div>
+      </div>
+      <div id="upper_plot" class="col-md-10 upper_plot">
+      </div>
+      <div id="legend_div" class="legend_container col-md-2 hidden-md hidden-sm hidden-xs" align="center">
+      </div>
+      <div id="info_div" class="info_container col-md-10 hidden-md hidden-sm hidden-xs" align="center">
+        <h1>INFO</h1>
+        <h2 align="center">
+          Hover over a plot in the plot list to get more info about it displayed in this info panel.
+        </h2>
+      </div>
+    </div>
+  </div>
+  <script>
+    const parentDiv = document.getElementById('fbl-vis-gfx');
+
+    var neuGFX = new NeuGFX(parentDiv, {});
+    neuGFX.connectModule("FlyBrainLab");
+    neuGFX.connectModule("Plotter");
+    neuGFX.checkIframe();
+
+    window._neuGFX = neuGFX;
+    window.fbl = neuGFX.getModule("FlyBrainLab");
+    //window._neuGFX.mods.FlyBrainLab.loadFBLGEXF('FITest');
+    window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
+    jQuery.getJSON("https://data.flybrainlab.fruitflybrain.org/simresults/retina_output0.json", function(result){
+      console.log(result);
+      window.simData = result;
+      window._neuGFX.mods.Plotter.addExternalData(result['data'], result['uids']);
+      console.log("Test data loaded...")
+    });
+
+  $('#plotter-toggle').click(function() {window.neuGFX.toggleScreen(); console.log('Triggered...')});
+    //neuGFX.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { neuGFX.fbl.initializeFlyBrainSVG(); });
+    
+  </script>
+</body>
+
+</html>

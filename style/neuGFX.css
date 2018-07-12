@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Rajdhani');
+
+.fbl-gfx-container{
+    background-color: #2C363F;
+}
+
+.fbl-plotter-container{
+    background-color: #2C363F;
+}
+
+#fbl-vis-gfx{
+    position: absolute;
+    top: 28px; 
+    left: 0; 
+    width: 100%; 
+    padding-top:28px;
+    height:calc(100% - 28px);
+    background-color: #2C363F;
+    overflow:hidden;
+}
+
+#fbl-gfx-navbar{
+    color: black;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #bdbdbd;
+    height: 28px;
+    font-size:13px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    overflow:hidden;
+}
+
+#fbl-gfx-navbar .dropdown-item {
+    font-size:13px;
+}

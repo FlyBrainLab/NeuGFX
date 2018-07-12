@@ -1,0 +1,83 @@
+.gfx_container {
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background-color: rgb(37, 44, 52);
+    overflow-y: scroll;
+  }
+
+.plotinfo_div {
+    height:75%;
+    float: left;
+  }
+
+.list_container {
+    color:white;
+    height:85%;
+    overflow: auto;
+  }
+
+.search_bar {
+    color:white;
+    font-size: 28px;
+    border-color: transparent;
+    border-bottom-color:white;
+    background-color: transparent;
+    width: 100%;
+  }
+
+.legend_container {
+  overflow: auto;
+  height:25%;
+  font-family:Rajdhani;
+  color:white;
+  float:left;
+  border-top: 1px dashed white;
+  border-right: 1px dashed white;
+}
+
+.info_container {
+  overflow: auto;
+  height:25%;
+  font-family:Rajdhani;
+  color:white;
+  border-top: 1px dashed white;
+}
+
+.upper_plot {
+  height: 75%;
+  margin: 0 auto;
+  float: left;
+}
+
+.plotinfo_div {
+  border-right: 1px dashed white;
+}
+
+@media (max-width: 768px) {
+  .plotinfo_div {
+    height:15%;
+    margin-bottom: 5%
+  }
+  .upper_plot {
+    height: 80%;
+  }
+  .legend_container {
+    display: none;
+    border: none;
+  }
+  .info_container {
+    display: none;
+    border: none;
+  }
+  .search_bar {
+      font-size: 16px;
+  }
+  .list_container {
+    column-count: 4;
+    overflow: scroll;
+  }
+  .h2, h2 {
+      font-size: 14px;
+  }
+}
