@@ -2,7 +2,7 @@ import svgPanZoom from "svg-pan-zoom/src/svg-pan-zoom.js";
 //import GraphicsExplorer from "./graphics_explorer";
 import GraphicsExplorer from "./graphics_explorer.js";
 import * as d3 from 'd3';
-import {event as currentEvent} from 'd3-selection';
+import { event as currentEvent } from 'd3-selection';
 import * as iziToast from "iziToast";
 
 export class FlyBrainLab {
@@ -21,21 +21,21 @@ export class FlyBrainLab {
             layoutTimeout: 10000,
             layouting: "forceatlas2",
             export: function () {
-              console.log('exporting...');
-              var output = window.s.toSVG({ download: true, filename: 'mygraph.svg', size: 1000 });
+                console.log('exporting...');
+                var output = window.s.toSVG({ download: true, filename: 'mygraph.svg', size: 1000 });
             },
             redraw: function () { }
-          };
+        };
     };
 
     getSVG() {
         return d3.select(document.querySelector('svg'));
     };
 
-    loadSVG(url,callback) {
+    loadSVG(url, callback) {
         callback = callback || null;
         if (callback != null)
-            this.gfx.loadSVG(url,callback);
+            this.gfx.loadSVG(url, callback);
         else
             this.gfx.loadSVG(url);
     }
@@ -48,9 +48,18 @@ export class FlyBrainLab {
     }
 
     loadFBLGEXF(url, callback = null) {
-        this.CircuitOptions.url = url;
-        this.gfx.InitializeMindset(this.CircuitOptions);
-        this.circuitName = url;
+        if (this.circuitName != url || url == "auto") {
+            this.CircuitOptions.url = url;
+            this.gfx.loadGEXF(url);
+            this.circuitName = url;
+        }
+    }
+
+    loadCircuit(url) {
+        if (this.circuitName != url) {
+            this.gfx.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/' + url + '.svg', callback);
+            this.circuitName = url;
+        }
     }
 
     sendAlert(type, string) {
@@ -61,15 +70,39 @@ export class FlyBrainLab {
     }
 
     sendMessage(message) {
-        console.log(message);
         this.gfx.sendMessage(message);
+    }
+
+    createFBLPath() {
+        $('.fbl-path').empty();
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Whole Brain");
+        a.appendChild(linkText);
+        a.href = "";
+        $('.fbl-path').append(a);
+        a.addEventListener('click', function(){
+            window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function() {window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.")});
+          });
+    }
+
+    addFBLPath(name, callback) {
+        var a = document.createElement('a');
+        var linkText = document.createTextNode(name);
+        var b = document.createTextNode(" ≫ ");
+        a.appendChild(linkText);
+        a.href = "";
+        $('.fbl-path').append(b);
+        $('.fbl-path').append(a);
+        a.addEventListener('click', callback);
     }
 
     initializeFlyBrainSVG() {
         window.lpuState = {};
         var svgObj = this.getSVG();
+        this.createFBLPath();
+
         svgObj.selectAll('.lpu').each(function () {
-            console.log('changed...');
+
             var id = d3.select(this).attr("id");
             var label = d3.select(this).attr("label");
             lpuState[id] = {
@@ -91,23 +124,31 @@ export class FlyBrainLab {
 
         this.graphicsExplorer = new GraphicsExplorer(svgObj, '.lpu', '.tract');
         window.graphicsExplorer = this.graphicsExplorer;
-        this.graphicsExplorer.dispatch["click-node"] = window.toggleLPU;
+
         this.graphicsExplorer.dispatch["dblclick-node"] = function (id) {
             if (id === 'lam_r') {
-                window.fbl.loadFBLSVG('lamina', function() {window.fbl.loadSubmodule('data/FBLSubmodules/onLaminaLoad.js'); console.log("Submodule loaded.")});
+                window.fbl.loadFBLSVG('lamina', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onLaminaLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
+            if (id === 'mb_r'||id === 'mb_l') {
+                window.fbl.loadFBLSVG('mb', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
+            if (id === 'eb'||id === 'pb') {
+                window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
         };
 
         console.log('Loaded GraphicsExplorer...');
 
-        window.toggleLPUButton = function(id) {
+        window.toggleLPUButton = function (id) {
             var btn = $("#btn-" + id);
             var marker = lpuState[id]['selected'] ? "&FilledSmallSquare;" : "&EmptySmallSquare;";
             btn.html(marker + " " + lpuState[id].label);
         }
 
-        window.toggleLPU = function(id, isSel) {
+        window.toggleLPU = function (id, isSel) {
             if (!(id in lpuState))
                 return;
             if (isSel === undefined)
@@ -121,21 +162,22 @@ export class FlyBrainLab {
             // update 3d scene
             //ffboMesh.toggleVis(id);
         }
+        this.graphicsExplorer.dispatch["click-node"] = window.toggleLPU;
 
-        window.onLPUGroupClick = function(id) {
+        window.onLPUGroupClick = function (id) {
             onRemoveAllClick();
             console.log(id)
             window.graphicsExplorer.selectNodes("." + id);
         }
 
-        window.onTractGroupClick = function(id) {
+        window.onTractGroupClick = function (id) {
             onRemoveAllClick();
             window.graphicsExplorer.selectEdges("." + id);
             //for (var x of graphicsExplorer.getEdgeList("."+id, 'mesh-label'))
             //    ffboMesh.show(x);
         }
 
-        window.onAddAllClick = function() {
+        window.onAddAllClick = function () {
             for (var key in lpuState) {
                 lpuState[key].selected = true;
                 window.toggleLPUButton(key);
@@ -143,7 +185,7 @@ export class FlyBrainLab {
             window.graphicsExplorer.selectAll();
             //ffboMesh.showAll();
         }
-        window.onRemoveAllClick = function() {
+        window.onRemoveAllClick = function () {
             for (var key in lpuState) {
                 lpuState[key].selected = false;
                 window.toggleLPUButton(key);
@@ -178,7 +220,7 @@ export class FlyBrainLab {
                     if ($(this).attr('label').indexOf(neuropils[i]) > -1) {
                         if ((neuropils[i] == "OG" && $(this).attr('label').indexOf("SOG") > -1) || (neuropils[i] == "og" && $(this).attr('label').indexOf("sog") > -1)) { }
                         else
-                        window.toggleLPU($(this).attr('id'), true);
+                            window.toggleLPU($(this).attr('id'), true);
                     }
                 });
             }

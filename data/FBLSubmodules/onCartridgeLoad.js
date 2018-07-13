@@ -7,7 +7,7 @@ function modelUpdate(NLPInput) {
      * 
      * @param {dict} NLPInput A dictionary with two keys, command and elements. Command is one of "show", "add" and "remove"; elements is an array of strings.
      */
-    console.log('modelUpdate Input:',NLPInput);
+    console.log('modelUpdate Input:', NLPInput);
     if (NLPInput.command == "show") {
         neuList.forEach(function (element) {
             var neu = svgObj.select("#" + element);
@@ -125,7 +125,10 @@ function toggleByID(a, echo = true) {
     if (echo == true) {
         b = a;
         b = b.replace("alpha", "a");
-        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: hideOrShow + " " + b + " home"});
+        if (b.indexOf('R') > -1)
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: hideOrShow + " " + b });
+        else
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: hideOrShow + " " + b + " home" });
     }
 }
 for (var i = 0; i < neuList.length; i++) {
@@ -152,8 +155,10 @@ window.onAddAllClick = function () {
         .style("opacity", "1.0")
         .attr("count", 0);
     //ffboMesh.showAll();
-    neuList.forEach(function(el) {window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "show " + el + " in column home" });});
-    
+    //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "remove neurons" });
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPtag', tag: "homecartridge" });
+    //neuList.forEach(function(el) {el = el.replace("alpha", "a"); window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "add " + el + " in column home" });});
+
     svgObj.selectAll(".neuron-block")
         .attr("visible", "true")
         .style("opacity", "1.0")
@@ -411,6 +416,50 @@ $("#btn-video-close").click(function () {
 //document.getElementById("cartnum").innerHTML = l;
 //console.log(p)
 //}
+
+
+window._simulate = function () {
+    //window._neuGFX.sendAlert("Starting execution...");
+    var cartid = window.customCircuitAttributes.cartridge_num;
+    var uids = [];
+    var data = [];
+    var activeList = getActiveObjOnSVG();
+    window.simData['uids'].forEach(function (value, i) {
+        var a = value.split("_");
+        //console.log(a[a.length - 1]);
+        if (a[a.length - 1] == String(cartid)) {
+            var uid = window.simData['uids'][i];
+            if (activeList.includes(a[1])) {
+                data.push(window.simData['data'][i]);
+                uids.push(window.simData['uids'][i]);
+            }
+        }
+        //console.log('%d: %s', i, value);
+    });
+    //console.log(uids);
+    window._neuGFX.sendAlert("Results loaded!");
+    window._neuGFX.mods.Plotter.addExternalData(data, uids,"Time [s]","Voltage [mV]");
+}
+
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Cartridge",function() {});
 console.log('Loading was successful...');
 window.onAddAllClick();
 
+window.simulate = function () {
+    window._neuGFX.sendAlert("Starting execution...");
+    jQuery.getJSON("https://data.flybrainlab.fruitflybrain.org/simresults/lamina_output0.json", function (result) {
+        console.log(result);
+        window.simData = result;
+        //window._neuGFX.mods.Plotter.addExternalData(result['data'], result['uids']);
+        jQuery.getJSON("https://data.flybrainlab.fruitflybrain.org/simresults/retina_output0.json", function (result) {
+            console.log(result);
+            window.simData['data'] = window.simData['data'].concat(result['data']);
+            window.simData['uids'] = window.simData['uids'].concat(result['uids']);
+            //window._neuGFX.mods.Plotter.addExternalData(result['data'], result['uids']);
+            console.log("Test data loaded...")
+            window._neuGFX.sendAlert("Execution complete! Loading results...");
+            window._simulate();
+        });
+        console.log("Test data loaded...")
+    });
+}

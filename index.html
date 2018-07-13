@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light" id = "fbl-gfx-navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-lg-block d-xl-non" id = "fbl-gfx-navbar">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -39,6 +39,9 @@
               <li class="nav-item">
                   <a class="nav-link" id="plotter-toggle" href="#">Toggle Plotter</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="reset-button" href="#">Reset</a>
+                </li>
           </ul>
         </div>
       </nav>
@@ -46,6 +49,9 @@
 
   <div class="fbl-gfx-container">
     <div id="fbl-vis-gfx" class="vis-gfx"></div>
+    <div class="fbl-path">
+      <!-- <a href="url">Whole Brain</a> ≫ <a href="url">Lamina</a> ≫ <a href="url">Cartridge</a> -->
+    </div>
   </div>
   <div class="fbl-plotter-container">
     <div class="fbl-gfx_container align-items-center">
@@ -56,17 +62,18 @@
         <div id="plot_list" class="list_container" align="left">
         </div>
       </div>
-      <div id="upper_plot" class="col-md-10 upper_plot">
+      <div id="upper_plot" class="col-md-8 upper_plot">
       </div>
       <div id="legend_div" class="legend_container col-md-2 hidden-md hidden-sm hidden-xs" align="center">
       </div>
-      <div id="info_div" class="info_container col-md-10 hidden-md hidden-sm hidden-xs" align="center">
+      <div id="info_div" class="info_container col-md-12 hidden-md hidden-sm hidden-xs" align="center">
         <h1>INFO</h1>
         <h2 align="center">
           Hover over a plot in the plot list to get more info about it displayed in this info panel.
         </h2>
       </div>
     </div>
+
   </div>
   <script>
     const parentDiv = document.getElementById('fbl-vis-gfx');
@@ -80,14 +87,15 @@
     window.fbl = neuGFX.getModule("FlyBrainLab");
     //window._neuGFX.mods.FlyBrainLab.loadFBLGEXF('FITest');
     window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
-    jQuery.getJSON("https://data.flybrainlab.fruitflybrain.org/simresults/retina_output0.json", function(result){
-      console.log(result);
-      window.simData = result;
-      window._neuGFX.mods.Plotter.addExternalData(result['data'], result['uids']);
-      console.log("Test data loaded...")
-    });
+
+
+
+
+
 
   $('#plotter-toggle').click(function() {window.neuGFX.toggleScreen(); console.log('Triggered...')});
+  $('#reset-button').click(function() {window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); }); console.log('Triggered...')});
+  $("#info_div").hide();
     //neuGFX.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { neuGFX.fbl.initializeFlyBrainSVG(); });
     
   </script>

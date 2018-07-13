@@ -240,7 +240,7 @@ export class GFXPlotter {
         });
 
         // Zoom Callbacks: 
-        this.current_object = this;
+        var current_object = this;
         /*
         // DEBUG: catch restyle events
         current_object.upper_plot.on('plotly_restyle', function(eventdata) {
@@ -248,9 +248,15 @@ export class GFXPlotter {
             console.log(eventdata[1]); // Array of indices
         });
         */
-        /*window.onresize() {
+        window.onresize = function () {
             Plotly.Plots.resize(current_object.upper_plot);
-        };*/
+            console.log('resized!');
+        };
+    }
+
+    resize()
+    {
+        Plotly.Plots.resize(this.upper_plot);
     }
 
     clear_data() {
@@ -294,7 +300,7 @@ export class GFXPlotter {
 
     redraw() {
 
-        this.current_object = this;
+        var current_object = this;
         //window.current_trace = 0;
         $('#plot_list').empty();
 
@@ -392,7 +398,7 @@ export class GFXPlotter {
             });
         }
         else {
-            new_data = jQuery.map(window.plot_dict[name][0], function (a, i) {
+            var new_data = jQuery.map(window.plot_dict[name][0], function (a, i) {
                 if (Array.isArray(a)) {
                     window.plot_dict[name][0][i] = window.plot_dict[name][0][i].concat(data[i]);
                 }
@@ -439,15 +445,16 @@ export class GFXPlotter {
 
     undraw_trace(name) {
         // TODO: draw trace and handle errors of 'name' existance
+        window.current_object = this;
         var temp = window.plot_dict[name][1];
 
-        Plotly.deleteTraces(current_object.upper_plot, [window.plot_dict[name][1]]);
+        Plotly.deleteTraces(window.current_object.upper_plot, [window.plot_dict[name][1]]);
         window.plot_dict[name][1] = -1;
 
         window.current_trace--;
 
         var keys = Object.keys(window.plot_dict);
-        for (i = 0; i < window.dict_len; i++) {
+        for (var i = 0; i < window.dict_len; i++) {
             if (window.plot_dict[keys[i]][1] >= 0 && window.plot_dict[keys[i]][1] > temp)
                 window.plot_dict[keys[i]][1]--;
         }
@@ -462,11 +469,11 @@ export class GFXPlotter {
 
     relegend() {
         $('#legend_div').empty();
-
+        var current_object = this;
         let data = current_object.upper_plot.data;
         var x;
 
-        this.current_object = this;
+        
 
         for (x = 0; x < data.length; x++) {
             var new_legend = current_object.d3.select('#legend_div').append('h6').attr("class", "legend-elem").text(data[x].name).attr("style", "color:" + window.plotly_colors[x % 10]);
@@ -474,8 +481,8 @@ export class GFXPlotter {
             $('.legend-elem').filter(function (index) {
                 return index == x;
             }).on('click', function () {
-                curr_legend = this;
-                curr_name = this.innerHTML;
+                var curr_legend = this;
+                var curr_name = this.innerHTML;
 
                 if (current_object.upper_plot.data[window.plot_dict[curr_name][1]].hasOwnProperty('visible')) {
                     if (current_object.upper_plot.data[window.plot_dict[curr_name][1]]['visible'] == true) {
@@ -495,6 +502,8 @@ export class GFXPlotter {
             $('.legend-elem').filter(function (index) {
                 return index == x;
             }).on('dblclick', function () {
+                var curr_legend = this;
+                var curr_name = this.innerHTML;
                 window.plotly_focus = !window.plotly_focus;
                 if (window.plotly_focus) {
                     let settings_arr = new Array(window.current_trace);
@@ -519,7 +528,39 @@ export class GFXPlotter {
         }
     }
 
-    addExternalData(data, names) {
+    addExternalData(data, names, x_label = "", y_label = "") {
+        this.upper_layout = {
+            showlegend: false,
+            xaxis:
+                {
+                    title: x_label, gridcolor: '#444', tickfont: {
+                        //family: 'Courier New, monospace',
+                        size: 14,
+                        color: '#999'
+                    }, titlefont: {
+                        //family: 'Courier New, monospace',
+                        size: 18,
+                        color: '#bbb'
+                    }
+                },
+            yaxis:
+                {
+                    fixedrange: true, title: y_label, gridcolor: '#444', tickfont: {
+                        size: 14,
+                        color: '#999'
+                    }, titlefont: {
+                        size: 18,
+                        color: '#bbb'
+                    }
+                },
+
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+        };
+
+        this.clear_data();
+        this.clear_plot();
+
         this.create_plot([]);
 
         // Prepare mock data (send this from the server)
@@ -527,7 +568,7 @@ export class GFXPlotter {
 
         // DEBUG: ADD DATA for M = 25 bogus plots
         var trace_data = [];
-        var M = 15;
+        var M = data.length;
         var possible = "abcdefghijklmnopqrstuvwxyz          ";
         var randomstring = "";
         var saved_data = {};
@@ -538,12 +579,13 @@ export class GFXPlotter {
             //    randomstring += possible.charAt(Math.floor(Math.random() * possible.length));
 
             var curr_data = [{
-                x: d3.range(0, data[i].length, 1),
+                x: d3.range(1/(data[i].length), 1, 1/(data[i].length)),
                 y: data[i],
                 z: d3.range(0, data[i].length, 1).map(function (x) { return i; }),
                 type: 'scatter',
                 name: names[i]
-            }, names[i],
+            }, 
+            names[i],
             "<div style=\"width:50%;\">" +
             "<h1>" + names[i] + "</h1>" +
             "<h6 align=\"left\">&emsp;" + randomstring.substr(0, 350) + "</h6>" +

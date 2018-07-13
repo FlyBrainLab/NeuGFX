@@ -13,6 +13,7 @@ import('sigma/build/plugins/sigma.exporters.svg.min');
 import('sigma/build/plugins/sigma.plugins.animate.min');
 import('sigma/build/plugins/sigma.plugins.dragNodes.min');
 import('sigma/build/plugins/sigma.plugins.filter.min');
+import('./sigma.plugins.tooltips.min');
 import('sigma/build/plugins/sigma.plugins.relativeSize.min');
 import('sigma/build/plugins/sigma.renderers.parallelEdges.min');
 import('sigma/build/plugins/sigma.renderers.snapshot.min');
@@ -20,6 +21,8 @@ import('sigma/build/plugins/sigma.renderers.snapshot.min');
 import svgPanZoom from "svg-pan-zoom/src/svg-pan-zoom.js";
 import * as d3 from 'd3';
 import { event as currentEvent } from 'd3-selection';
+
+
 import * as iziToast from "iziToast"
 import dat from '../etc/dat.gui';
 
@@ -105,64 +108,85 @@ class NeuGFX {
     };
     window.iframeEventHandler = function (event) {
       console.log('[GFX FrontEnd Obtained Message:]', event.data);
+      var msg = event.data;
       //permittedMessages = ['loadResults', 'clearResults', 'showServerMessage', 'startExecution', 'loadCircuit', 'updateFileList'];
-      if (event.data.messageType == 'loadResults') {
-        window._neuGFX.mods.Plotter.addExternalData(event.data.data['data'], event.data.data['uids']);
-      }
-      if (event.data.messageType == 'togglePlotter') {
-        window._neuGFX.toggleScreen();
-        console.log('Screen toggled...');
-      }
-      if (event.data.messageType == 'clearResults') {
-        window._neuGFX.mods.Plotter.clear_data();
-        window._neuGFX.mods.Plotter.clear_plot();
-      }
-      if (event.data.messageType == 'showServerMessage') {
-        window._neuGFX.showServerMessage(event.data.data);
-      }
-      if (event.data.messageType == 'startExecution') {
-        window._neuGFX.startExecution(event.data.data);
-      }
-      if (event.data.messageType == 'loadCircuit') {
-        window._neuGFX.loadCircuit(event.data.data);
-      }
-      if (event.data.messageType == 'updateActiveNeuropils') {
-        window._neuGFX.mods.FlyBrainLab.updateActiveNeuropils(event.data.data);
-      }
-      if (event.data.messageType == 'updateFileList') {
-        window._neuGFX.updateFileList(event.data.data);
-      }
-      if (event.data.messageType == 'GFXquery') {
-        window._neuGFX.executeGFXquery(event.data.data);
-      }
-      if (event.data.messageType == 'Data') {
-        var sender = event.data.data.sender;
-        var value = event.data.data.value;
-        //console.log(data);
-        var type = value.type;
-        if (value.type == "append")
-        {
-          console.log(value.type, sender._value[value['data']].name);
-          window._neuGFX.data = {
-            ...window._neuGFX.data,
-            ...sender._value
-          };
-          var message = {command: 'add', elements: [window._neuGFX.data[value['data']].name]};
-          console.log(message);
-          window.modelUpdate(message);
+      switch (msg.messageType) {
+        case 'loadResults': {
+          window._neuGFX.mods.Plotter.addExternalData(event.data.data['data'], event.data.data['uids']);
+          break;
         }
-        if (value.type == "remove")
-        {
-          console.log(value.type, window._neuGFX.data[value['data']].name);
-          window.modelUpdate({command: 'remove', elements: [window._neuGFX.data[value['data']].name]});
+        case 'togglePlotter': {
+          window._neuGFX.toggleScreen();
+          window._neuGFX.sendAlert("Plotter toggled...");
+          break;
         }
-        //if ("data" in data) {
-        //  console.log(data);
-        //}
-        //window.neu_neuGFXgfx.executeGFXquery(event.data.data);
+        case 'clearResults': {
+          window._neuGFX.mods.Plotter.clear_data();
+          window._neuGFX.mods.Plotter.clear_plot();
+          break;
+        }
+        case 'showServerMessage': {
+          window._neuGFX.showServerMessage(event.data.data);
+          break;
+        }
+        case 'startExecution': {
+          window._neuGFX.startExecution(event.data.data);
+          break;
+        }
+        case 'loadCircuit': {
+          window._neuGFX.sendAlert("Loading a circuit...");
+          window._neuGFX.mods.FlyBrainLab.loadCircuit(event.data.data);
+          break;
+        }
+        case 'updateActiveNeuropils': {
+          window._neuGFX.mods.FlyBrainLab.updateActiveNeuropils(event.data.data);
+          break;
+        }
+        case 'runLayouting': {
+          window._neuGFX.sendAlert("Starting layouting...");
+          window._neuGFX.mods.FlyBrainLab.loadFBLGEXF('auto');
+          break;
+        }
+        case 'updateFileList': {
+          window._neuGFX.updateFileList(event.data.data);
+          break;
+        }
+        case 'GFXquery': {
+          window._neuGFX.executeGFXquery(event.data.data);
+          break;
+        }
+        case 'simulate': {
+          window.simulate();
+          break;
+        }
+        case 'Data': {
+          var sender = event.data.data.sender;
+          var value = event.data.data.value;
+          //console.log(data);
+          var type = value.type;
+          if (value.type == "append") {
+            console.log(value.type, sender._value[value['data']].name);
+            window._neuGFX.data = {
+              ...window._neuGFX.data,
+              ...sender._value
+            };
+            var message = { command: 'add', elements: [window._neuGFX.data[value['data']].name] };
+            console.log(message);
+            window.modelUpdate(message);
+          }
+          if (value.type == "remove") {
+            console.log(value.type, window._neuGFX.data[value['data']].name);
+            window.modelUpdate({ command: 'remove', elements: [window._neuGFX.data[value['data']].name] });
+          }
+          break;
+          //if ("data" in data) {
+          //  console.log(data);
+          //}
+          //window.neu_neuGFXgfx.executeGFXquery(event.data.data);
+        }
       }
     }
-    this.checkIframe();
+    //this.checkIframe();
   };
 
   connectModule(moduleName) {
@@ -171,7 +195,7 @@ class NeuGFX {
         this.mods.FlyBrainLab = new FlyBrainLab(this.container, { master: this });
         break;
       case "Plotter":
-        this.mods.Plotter = new GFXPlotter($('.fbl-plotter-container'), { master: this });
+        this.mods.Plotter = new GFXPlotter(100, 100);
         $('.fbl-plotter-container').hide();
         break;
     }
@@ -181,10 +205,11 @@ class NeuGFX {
     return this.mods[moduleName];
   }
 
-  sendAlert(type, string) {
+  sendAlert(string, type = "success") {
     if (type == "log")
       console.log("This is a log event.");
     console.log(string);
+    window.top.postMessage({ messageType: 'alert', alertType: "success", data: string }, '*');
   }
 
   sendMessage(message) {
@@ -202,12 +227,12 @@ class NeuGFX {
 
   loadSVG(url, callback = function () { }) {
     this.plotMode = "SVG";
+    try { this.clearGraph(); } catch { };
     this.clear();
     $(this.container).load(url, function () {
-      $(this.container).find("svg").width('100%');
-      $(this.container).find("svg").height('100%');
-
       var svgElement = document.querySelector('svg');
+      $(svgElement).width('100%');
+      $(svgElement).height('100%');
       var panZoomSVG = svgPanZoom(svgElement, {
         dblClickZoomEnabled: false,
         preventMouseEventsDefault: false
@@ -218,13 +243,16 @@ class NeuGFX {
 
   loadGEXF(url, callback = function () { }) {
     this.plotMode = "sigma";
-    initializeGEXF(this.CircuitOptions);
+    this.clear();
+    this.CircuitOptions.url = url;
+    this.initializeGEXF(this.CircuitOptions);
   }
 
   switchScreen(screen) {
     if (screen == "plot") {
       $('#fbl-vis-gfx').hide();
       $('.fbl-plotter-container').show();
+      this.mods.Plotter.resize();
       this.screenMode = "plot";
     }
     if (screen == "diagram") {
@@ -243,9 +271,9 @@ class NeuGFX {
   }
 
   clearGraph() {
-    s.stopForceAtlas2();
-    s.graph.clear();
-    s.graph.kill();
+    this.s.stopForceAtlas2();
+    this.s.graph.clear();
+    this.s.graph.kill();
     $(this.container).empty();
   }
 
@@ -285,11 +313,11 @@ class NeuGFX {
         for (i = 0; i < len; i++) {
           nodes[i].x = Math.random();
           nodes[i].idk = nodes[i].attributes['class-**'];
-          nodes[i].label = nodes[i].attributes['name'];
+          nodes[i].label = nodes[i].attributes['BioName'];
           nodes[i].y = Math.random();
           nodes[i].size = window.s.graph.degree(nodes[i].id);
           //console.log(nodes[i]);
-          if (nodes[i].label.indexOf('AlphaSynapse') > -1) {
+          if (nodes[i].label.indexOf('Synapse') > -1) {
             nodes[i].color = CircuitOptions.synapseColor;
           }
           else
@@ -324,6 +352,24 @@ class NeuGFX {
     dragListener.bind('dragend', function (event) {
       window.s.settings('drawEdges', true);
     });
+    console.log("adding tooltips...");
+    /* var tooltipInstance = sigma.plugins.tooltips(
+      this.s, this.s.renderers[0],
+      {
+        node: [{
+          template: 'Hello node!'
+        }],
+        edge: [{
+          template: 'Hello edge!'
+        }],
+        stage: [{
+          template: 'Hello stage!'
+        }]
+      }
+    ); */
+    this.s.bind('overNode clickNode', (e)=> {
+      console.log(e.data.node.attributes);
+    });
   };
 
   clear() {
@@ -335,8 +381,14 @@ class NeuGFX {
   }
 
   executeGFXquery(query) {
+    if (query.indexOf("load") !== -1)
+    {
+      window._neuGFX.mods.FlyBrainLab.loadCircuit(event.data.data.split(" ")[1]);
+    }
+    else{
     query.indexOf("show") !== -1
     window.onRemoveAllClick();
+    }
 
 
   }

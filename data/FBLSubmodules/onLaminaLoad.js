@@ -1,7 +1,7 @@
 window.sendMaster = function (x) {
     window.top.postMessage(x, '*');
 }
-
+cartridge_data_set = false;
 
     /*
     * Create neuron list
@@ -89,8 +89,8 @@ window.sendMaster = function (x) {
         }
  
         //ffboMesh.toggleVis(a);
-        console.log(a);
-        window._neuGFX.mods.FlyBrainLab.sendMessage({messageType:'NLPquery', query: hideOrShow + " " + a });
+        //console.log(a);
+        //window._neuGFX.mods.FlyBrainLab.sendMessage({messageType:'NLPquery', query: hideOrShow + " " + a });
    }
 
 
@@ -166,9 +166,10 @@ window.sendMaster = function (x) {
         })
         .on("click", function () {
             var id = d3.select(this).attr("id");
-            id = id.substring(1);
-            id = 'cartridge' + (id - 5) / 6;
             toggleByID(id);
+            id = id.substring(1);
+            id = 'circle' + (id - 5) / 6;
+            
         })
         .on("dblclick", function () {
             var id = d3.select(this).attr("id");
@@ -204,4 +205,5 @@ window.sendMaster = function (x) {
 
 
 console.log('Loading was successful...');
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Lamina",function() {});
 //window.onLaminaLoad();
