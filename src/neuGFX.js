@@ -8,6 +8,7 @@ import('sigma/build/plugins/sigma.layout.forceAtlas2.min');
 import('sigma/build/plugins/sigma.layout.noverlap.min');
 import('./sigma.parsers.gexf.min'); // the current parser has a bug that is fixed in this local file
 //import('sigma/build/plugins/sigma.parsers.gexf.min');
+import Mustache from "mustache";
 import('sigma/build/plugins/sigma.parsers.json.min');
 import('sigma/build/plugins/sigma.exporters.svg.min');
 import('sigma/build/plugins/sigma.plugins.animate.min');
@@ -32,8 +33,11 @@ import { GFXPlotter } from "./GFXPlotter.js";
 
 
 // Stylings for neuGFX
-import '../style/neuGFX.css';
 import '../style/iziToast.min.css';
+import '../style/jquery.qtip.min.css';
+import '../style/circuitDiagrams.css';
+import '../style/neuGFX.css';
+
 
 // add FontAwesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -175,8 +179,11 @@ class NeuGFX {
             window.modelUpdate(message);
           }
           if (value.type == "remove") {
-            console.log(value.type, window._neuGFX.data[value['data']].name);
-            window.modelUpdate({ command: 'remove', elements: [window._neuGFX.data[value['data']].name] });
+            try {
+              console.log(value.type, window._neuGFX.data[value['data']].name);
+              window.modelUpdate({ command: 'remove', elements: [window._neuGFX.data[value['data']].name] });
+            }
+            catch { };
           }
           break;
           //if ("data" in data) {
@@ -304,8 +311,37 @@ class NeuGFX {
 
     console.log(sigma.parsers);
     window.s = this.s;
+
+    window.generateTooltip = function (data) {
+      var templateStart = '' +
+        ' <div class="sigma-tooltip-header">' + data.label + '</div>' +
+        '  <div class="sigma-tooltip-body">' +
+        '    <table>';
+      var templateEnd = '    </table>' +
+        '  </div>' +
+        '  <div class="sigma-tooltip-footer">Number of connections: ' + data.degree + '</div>';
+      var template = templateStart;
+      Object.keys(data.attributes).forEach(function (key) {
+        console.log(key, data.attributes[key]);
+        template = template + '      <tr><th>' + key + '</th> <td>' + data.attributes[key] + '</td></tr>';
+      });
+      template = template + templateEnd;
+      console.log(template);
+      return template;
+    }
     sigma.parsers.gexf(CircuitOptions.database + CircuitOptions.url + '.gexf', this.s,
       function () {
+        var dragListener = sigma.plugins.dragNodes(window.s, window.s.renderers[0]);
+        dragListener.bind('startdrag', function (event) {
+          window.s.settings('drawEdges', false);
+        });
+        dragListener.bind('drag', function (event) {
+        });
+        dragListener.bind('drop', function (event) {
+        });
+        dragListener.bind('dragend', function (event) {
+          window.s.settings('drawEdges', true);
+        });
         // this is needed in case the original JSON doesn't have color / size / x-y attributes 
         var i,
           nodes = window.s.graph.nodes(),
@@ -340,36 +376,38 @@ class NeuGFX {
         if (len == 0)
           window.s.stopForceAtlas2();
         console.log('Refreshed!');
+        console.log("adding tooltips...");
+        var tooltipInstance = sigma.plugins.tooltips(
+          window.s, window.s.renderers[0],
+          {
+            node: [{
+              show: 'doubleClickNode',
+              hide: 'clickStage',
+              cssClass: 'sigma-tooltip',
+              position: 'top',
+              template: "",
+              autoadjust: true,
+              renderer: function (node, template) {
+                node.degree = this.degree(node.id);
+                console.log(node);
+                return window.generateTooltip(node);
+              }
+            }]
+          }
+        ); /* */
+
+        tooltipInstance.bind('shown', function (event) {
+          console.log('tooltip shown', event);
+        });
+        tooltipInstance.bind('hidden', function (event) {
+          console.log('tooltip hidden', event);
+        });
       });
-    var dragListener = sigma.plugins.dragNodes(this.s, this.s.renderers[0]);
-    dragListener.bind('startdrag', function (event) {
-      window.s.settings('drawEdges', false);
-    });
-    dragListener.bind('drag', function (event) {
-    });
-    dragListener.bind('drop', function (event) {
-    });
-    dragListener.bind('dragend', function (event) {
-      window.s.settings('drawEdges', true);
-    });
-    console.log("adding tooltips...");
-    /* var tooltipInstance = sigma.plugins.tooltips(
-      this.s, this.s.renderers[0],
-      {
-        node: [{
-          template: 'Hello node!'
-        }],
-        edge: [{
-          template: 'Hello edge!'
-        }],
-        stage: [{
-          template: 'Hello stage!'
-        }]
-      }
-    ); */
-    this.s.bind('overNode clickNode', (e)=> {
+
+
+    /*this.s.bind('overNode clickNode', (e)=> {
       console.log(e.data.node.attributes);
-    });
+    });*/
   };
 
   clear() {
@@ -381,13 +419,12 @@ class NeuGFX {
   }
 
   executeGFXquery(query) {
-    if (query.indexOf("load") !== -1)
-    {
+    if (query.indexOf("load") !== -1) {
       window._neuGFX.mods.FlyBrainLab.loadCircuit(event.data.data.split(" ")[1]);
     }
-    else{
-    query.indexOf("show") !== -1
-    window.onRemoveAllClick();
+    else {
+      query.indexOf("show") !== -1
+      window.onRemoveAllClick();
     }
 
 

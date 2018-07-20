@@ -4,6 +4,8 @@ import GraphicsExplorer from "./graphics_explorer.js";
 import * as d3 from 'd3';
 import { event as currentEvent } from 'd3-selection';
 import * as iziToast from "iziToast";
+import * as Fuse from 'fuse.js';
+import Qtip2 from 'qtip2';
 
 export class FlyBrainLab {
     constructor(container, options = {}) {
@@ -66,7 +68,7 @@ export class FlyBrainLab {
         if (type == "log")
             console.log("This is a log event.");
         console.log(string);
-        this.gfx.sendAlert(message);
+        this.gfx.sendAlert(string);
     }
 
     sendMessage(message) {
@@ -80,9 +82,9 @@ export class FlyBrainLab {
         a.appendChild(linkText);
         a.href = "";
         $('.fbl-path').append(a);
-        a.addEventListener('click', function(){
-            window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function() {window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.")});
-          });
+        a.addEventListener('click', function () {
+            window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.") });
+        });
     }
 
     addFBLPath(name, callback) {
@@ -130,11 +132,15 @@ export class FlyBrainLab {
                 window.fbl.loadFBLSVG('lamina', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onLaminaLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
-            if (id === 'mb_r'||id === 'mb_l') {
+            if (id === 'mb_r' || id === 'mb_l') {
                 window.fbl.loadFBLSVG('mb', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
-            if (id === 'eb'||id === 'pb') {
+            if (id === 'al_r' || id === 'al_l') {
+                window.fbl.loadFBLSVG('al', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onALLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
+            if (id === 'eb' || id === 'pb') {
                 window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
@@ -317,6 +323,7 @@ export class FlyBrainLab {
             this.sendMessage({ messageType: 'GFXMessage', args: { content: 'Generated Search String: ' + c_string, type: "log" } }, '*');
             if (c_string.indexOf('deactivate') !== -1) {
                 understood = true;
+                //console.log('Ablating...', c_string);
                 //sendAlert('log','Parsed entry, retrieving and applying results...');
                 this.sendMessage({ messageType: 'GFXMessage', args: { content: 'Parsed entry, retrieving and applying results...', type: "log" } }, '*');
                 var token_list = c_string.split(' ');
@@ -341,13 +348,13 @@ export class FlyBrainLab {
                         }
                     }
                 });
-                //sendAlert('success','Results applied!');
+
                 this.sendMessage({ messageType: 'GFXMessage', args: { content: 'Results applied!', type: "success" } }, '*');
                 $('#search_box').val('');
             }
             else if (c_string.indexOf('activate') !== -1) {
                 understood = true;
-                //sendAlert('log','Parsed entry, retrieving and applying results...');
+
                 this.sendMessage({ messageType: 'GFXMessage', args: { content: 'Parsed entry, retrieving and applying results...', type: "log" } }, '*');
                 var token_list = c_string.split(' ');
                 $("svg g.neuron_class").each(function () {
@@ -383,15 +390,18 @@ export class FlyBrainLab {
         $("svg g").each(function () {
             console.log($(this).find('title').text());
             $(this).attr("tooltip-data", $(this).find('title').text());
-            $(this).find('title').remove();
+            //$(this).find('title').remove();
+            console.log($(this).find('tooltip-data').text());
         });
         $("svg g.synapse_class").each(function () {
             console.log($(this).find('tooltip-data').text());
             var synapse_info = $(this).attr('tooltip-data').split(' :: ')[2];
-            $(this).attr("synapse_info", synapse_info);
-            $(this).attr("presyn", synapse_info.split('-:-')[0]);
-            $(this).attr("postsyn", synapse_info.split('-:-')[1]);
-            $(this).attr("tags", $(this).attr('tooltip-data').split(' :: ')[3]);
+            if (typeof synapse_info === 'string') {
+                $(this).attr("synapse_info", synapse_info);
+                $(this).attr("presyn", synapse_info.split('-:-')[0]);
+                $(this).attr("postsyn", synapse_info.split('-:-')[1]);
+                $(this).attr("tags", $(this).attr('tooltip-data').split(' :: ')[3]);
+            }
         });
 
         $("svg g.neuron_class").each(function () {
@@ -402,6 +412,7 @@ export class FlyBrainLab {
         });
 
         $('svg g.synapse_class').on('click', function () {
+            //console.log(this);
             if ($(this).attr('inactive')) {
                 $(this).removeAttr('inactive');
                 var presyn = $(this).attr('presyn');
@@ -439,30 +450,36 @@ export class FlyBrainLab {
 
             }
         });
-
-        $('svg g.default_class, svg g.synapse_class, svg g.neuron_class').qtip({
-            content: {
-                text: function (api) {
-                    //return $(this).find('title').text().split(' :: ')[1];
-                    return $(this).attr('tooltip-data').split(' :: ')[1];
-                },
-                title: {
+        setTimeout(function () {
+            $('svg g.default_class, svg g.synapse_class, svg g.neuron_class').qtip({
+                content: {
                     text: function (api) {
-                        //return $(this).find('title').text().split(' :: ')[0];
-                        return $(this).attr('tooltip-data').split(' :: ')[0];
-                        //OR
-                        return $(this).attr('tooltip');
+                        //return $(this).find('title').text().split(' :: ')[1];
+                        console.log($(this).attr('tooltip-data'));
+                        return $(this).attr('tooltip-data').split(' :: ')[1];
+                    },
+                    title: {
+                        text: function (api) {
+                            //return $(this).find('title').text().split(' :: ')[0];
+                            return $(this).attr('tooltip-data').split(' :: ')[0];
+                            //OR
+                            return $(this).attr('tooltip');
+                        }
                     }
+                },
+                position: {
+                    target: 'mouse', // Track the mouse as the positioning target
+                    adjust: { x: 5, y: 5 } // Offset it slightly from under the mouse
+                },
+                style: {
+                    classes: 'qtip-bootstrap-neurogfx'
                 }
-            },
-            position: {
-                target: 'mouse', // Track the mouse as the positioning target
-                adjust: { x: 5, y: 5 } // Offset it slightly from under the mouse
-            },
-            style: {
-                classes: 'qtip-bootstrap-neurofx'
-            }
-        });
+            });
+
+            $("svg g").each(function () {
+                $(this).find('title').remove();
+            });
+        }, 10);
     }
 
 };
