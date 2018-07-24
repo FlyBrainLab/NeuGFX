@@ -10,17 +10,20 @@ function modelUpdate(NLPInput) {
     console.log('modelUpdate Input:', NLPInput);
     if (NLPInput.command == "show") {
         neuList.forEach(function (element) {
+            element = element.replace('a','alpha');
             var neu = svgObj.select("#" + element);
             if (neu.attr("visible") == "true") {
                 toggleByID(element, false);
             };
         });
         NLPInput.elements.forEach(function (element) {
+            element = element.replace('a','alpha');
             toggleByID(element, false);
         });
     }
     if (NLPInput.command == "remove") {
         NLPInput.elements.forEach(function (element) {
+            element = element.replace('a','alpha');
             var neu = svgObj.select("#" + element);
             if (neu.attr("visible") == "true") {
                 toggleByID(element, false);
@@ -29,6 +32,7 @@ function modelUpdate(NLPInput) {
     }
     if (NLPInput.command == "add") {
         NLPInput.elements.forEach(function (element) {
+            element = element.replace('a','alpha');
             var neu = svgObj.select("#" + element);
             if (neu.attr("visible") != "true") {
                 toggleByID(element, false);
