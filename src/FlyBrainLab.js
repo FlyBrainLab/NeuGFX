@@ -140,11 +140,12 @@ export class FlyBrainLab {
                 window.fbl.loadFBLSVG('al', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onALLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
-            if (id === 'eb' || id === 'pb') {
+            if (id === 'eb' || id === 'pb' || id === 'fb') {
                 window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
         };
+        window.fbl.loadSubmodule('data/FBLSubmodules/onFlyLoad.js');
 
         console.log('Loaded GraphicsExplorer...');
 

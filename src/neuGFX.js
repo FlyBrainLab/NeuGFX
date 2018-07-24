@@ -7,7 +7,6 @@ import Sigma from 'sigma';
 import('sigma/build/plugins/sigma.layout.forceAtlas2.min');
 import('sigma/build/plugins/sigma.layout.noverlap.min');
 import('./sigma.parsers.gexf.min'); // the current parser has a bug that is fixed in this local file
-//import('sigma/build/plugins/sigma.parsers.gexf.min');
 import Mustache from "mustache";
 import('sigma/build/plugins/sigma.parsers.json.min');
 import('sigma/build/plugins/sigma.exporters.svg.min');
@@ -243,6 +242,13 @@ class NeuGFX {
       var panZoomSVG = svgPanZoom(svgElement, {
         dblClickZoomEnabled: false,
         preventMouseEventsDefault: false
+      });
+      window.addEventListener("resize", function () {
+        console.log('Resized the SVG...');
+        panZoomSVG.resize(); 
+        panZoomSVG.updateBBox(); 
+        panZoomSVG.fit();
+        panZoomSVG.center();
       });
       callback();
     });

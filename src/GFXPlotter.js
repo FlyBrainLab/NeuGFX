@@ -13,7 +13,7 @@ export class GFXPlotter {
         let font2 = 'Montserrat, sans-serif'
         let x_label = 'Time [s]';
         let y_label = 'Odorant Concentration (ppm)';
-        window.plot_dict = {};
+        this.plot_dict = {};
         // Create the graph
         this.d3 = Plotly.d3;
 
@@ -82,6 +82,7 @@ export class GFXPlotter {
         // SEARCH
         this.current_object = this;
         var search_bar = this.d3.select('#plot_search');
+        var _this = this;
         search_bar.on('keydown', function () {
             //console.log(d3.event.key);
             if (d3.event.key == 'Escape') {
@@ -118,17 +119,17 @@ export class GFXPlotter {
                 // DEBUG: extend+escape for logging
                 if (search_bar.node().value.toLowerCase() == "extend") {
                     console.log("EXTEND TRIGGERED.");
-                    var dict_keys = Object.keys(window.plot_dict);
+                    var dict_keys = Object.keys(_this.plot_dict);
                     start = window.extend_end;
                     end = window.extend_end + 20;
                     for (var i = 0; i < window.dict_len; i++) {
-                        if (window.plot_dict[dict_keys[i]][1] > -1) {
+                        if (_this.plot_dict[dict_keys[i]][1] > -1) {
                             current_object.add_data({
                                 x: d3.range(start, end, 1),
                                 y: d3.range(start, end, 1).map(d3.random.normal(10.)),
                                 z: d3.range(start, end, 1).map(function (x) { return 0; }),
                                 type: 'scatter',
-                                name: window.plot_dict[dict_keys[i]][0]['name']
+                                name: _this.plot_dict[dict_keys[i]][0]['name']
                             });
                         }
                     }
@@ -150,15 +151,15 @@ export class GFXPlotter {
         // plot_dict[key][0]    ->  data
         // plot_dict[key][1]    ->  plot index
         // plot_dict[key][2]    ->  info
-        window.plot_dict = {};
+        this.plot_dict = {};
         // keep track of the latest plot number in the plotly div
-        window.current_trace = 0;
-        // keep track of the plot_dict length (can be replaced by Object.keys( window.plot_dict ))
-        window.dict_len = 0;
+        this.current_trace = 0;
+        // keep track of the plot_dict length (can be replaced by Object.keys( _this.plot_dict ))
+        this.dict_len = 0;
         // keep track of current plot in info
-        window.hover_key = -1;
+        this.hover_key = -1;
         // plotly default colors array // TODO: do this in a better way?
-        window.plotly_colors = [
+        this.plotly_colors = [
             '#1f77b4',  // muted blue
             '#ff7f0e',  // safety orange
             '#2ca02c',  // cooked asparagus green
@@ -170,7 +171,7 @@ export class GFXPlotter {
             '#bcbd22',  // curry yellow-green
             '#17becf'   // blue-teal
         ];
-        window.plotly_focus = false;
+        this.plotly_focus = false;
 
         /*iziToast.success({
             title: 'Welcome',
@@ -191,7 +192,7 @@ export class GFXPlotter {
         */
 
         // DEBUG: for extend debug
-        window.extend_end = 20;
+        this.extend_end = 20;
 
         /*
         // DEBUG: window.performance
@@ -218,6 +219,7 @@ export class GFXPlotter {
         var search_obj = this.d3.select('#plot_search').node();
 
         this.current_object = this;
+        var _this = this;
         this.d3.select('#plot_search').on('input', function () {
             var search = search_obj.value;
 
@@ -225,10 +227,10 @@ export class GFXPlotter {
                 $('.list-elem').show();
             }
             else if (search.toLowerCase() == "active") {
-                var dict_keys = Object.keys(window.plot_dict);
+                var dict_keys = Object.keys(_this.plot_dict);
                 $('.list-elem').hide();
                 $('.list-elem').filter(function (index) {
-                    return window.plot_dict[dict_keys[index]][1] >= 0;
+                    return _this.plot_dict[dict_keys[index]][1] >= 0;
                 }).show();
             }
             else {
@@ -260,7 +262,7 @@ export class GFXPlotter {
     }
 
     clear_data() {
-        window.plot_dict = {};
+        this.plot_dict = {};
         window.current_trace = 0;
         window.dict_len = 0;
 
@@ -275,17 +277,18 @@ export class GFXPlotter {
 
     clear_plot() {
         window.current_trace = 0;
-
-        var dict_keys = Object.keys(window.plot_dict);
+        var _this = this;
+        var dict_keys = Object.keys(_this.plot_dict);
         for (var i = 0; i < window.dict_len; i++) {
-            window.plot_dict[dict_keys[i]][1] = -1;
+            _this.plot_dict[dict_keys[i]][1] = -1;
         }
 
         this.redraw();
     }
 
     import(data, len) {
-        window.plot_dict = data;
+        var _this = this;
+        _this.plot_dict = data;
         window.current_trace = 0;
         // TODO: error checking of length vs len
         window.dict_len = len;
@@ -299,20 +302,20 @@ export class GFXPlotter {
     }
 
     redraw() {
-
+        var _this = this;
         var current_object = this;
         //window.current_trace = 0;
         $('#plot_list').empty();
 
-        var dict_keys = Object.keys(window.plot_dict);
+        var dict_keys = Object.keys(_this.plot_dict);
         for (var i = 0; i < window.dict_len; i++) {
             var new_plot = current_object.d3.select('#plot_list').append('h2').attr("class", "list-elem");
             var currName = dict_keys[i];
             new_plot.text(currName);
-            if (window.plot_dict[dict_keys[i]][1] >= 0) {
+            if (_this.plot_dict[dict_keys[i]][1] >= 0) {
                 new_plot.style("color", "orange");
             }
-            //window.plot_dict[currName][1] = -1;
+            //_this.plot_dict[currName][1] = -1;
         }
 
         for (var j = 0; j < window.dict_len; j++) {
@@ -321,7 +324,7 @@ export class GFXPlotter {
             }).on('click', function () {
                 var curr_plot = this;
                 var curr_name = this.innerHTML;
-                if (window.plot_dict[curr_name][1] >= 0) {
+                if (_this.plot_dict[curr_name][1] >= 0) {
                     // Remove Trace
                     curr_plot.style["color"] = ["white"];
 
@@ -338,35 +341,36 @@ export class GFXPlotter {
                 return index == j;
             }).on('mouseover', function () {
                 window.hover_key = this.innerHTML;
-                $('#info_div')[0].innerHTML = window.plot_dict[this.innerHTML][2];
+                $('#info_div')[0].innerHTML = _this.plot_dict[this.innerHTML][2];
             });
         }
 
         Plotly.react(this.upper_plot, [], this.upper_layout);
 
-        var dict_keys = Object.keys(window.plot_dict);
+        var dict_keys = Object.keys(_this.plot_dict);
         var reload_queue = [];
         for (var x = 0; x < window.dict_len; x++) {
-            if (window.plot_dict[dict_keys[x]][1] >= 0) {
-                Plotly.addTraces(this.upper_plot, window.plot_dict[dict_keys[x]][0]);
-                reload_queue.push(window.plot_dict[dict_keys[x]][1]);
+            if (_this.plot_dict[dict_keys[x]][1] >= 0) {
+                Plotly.addTraces(this.upper_plot, _this.plot_dict[dict_keys[x]][0]);
+                reload_queue.push(_this.plot_dict[dict_keys[x]][1]);
             }
         }
 
         Plotly.moveTraces(this.upper_plot, [...Array(window.current_trace).keys()], reload_queue);
 
         if (window.hover_key > 0)
-            $('#info_div')[0].innerHTML = window.plot_dict[window.hover_key][2];
+            $('#info_div')[0].innerHTML = _this.plot_dict[window.hover_key][2];
 
         current_object.relegend();
     }
 
     add_data(data, inName, info = "") {
+        var _this = this;
         window.current_object = this;
         name = data['name'];
-        if (!window.plot_dict.hasOwnProperty(name)) {
+        if (!_this.plot_dict.hasOwnProperty(name)) {
             this.current_object = this;
-            window.plot_dict[name] = [data, -1, info];
+            _this.plot_dict[name] = [data, -1, info];
             window.dict_len++;
             var new_plot = this.d3.select('#plot_list').append('h2').attr("class", "list-elem");
             new_plot.text(name);
@@ -377,7 +381,7 @@ export class GFXPlotter {
             }).on('click', function () {
                 var curr_plot = this;
                 var curr_name = this.innerHTML;
-                if (window.plot_dict[curr_name][1] >= 0) {
+                if (_this.plot_dict[curr_name][1] >= 0) {
                     // Remove Trace
                     curr_plot.style["color"] = ["white"];
 
@@ -394,34 +398,35 @@ export class GFXPlotter {
                 return this.innerHTML == name;
             }).on('mouseover', function () {
                 window.hover_key = this.innerHTML;
-                $('#info_div')[0].innerHTML = window.plot_dict[this.innerHTML][2];
+                $('#info_div')[0].innerHTML = _this.plot_dict[this.innerHTML][2];
             });
         }
         else {
-            var new_data = jQuery.map(window.plot_dict[name][0], function (a, i) {
+            var new_data = jQuery.map(_this.plot_dict[name][0], function (a, i) {
                 if (Array.isArray(a)) {
-                    window.plot_dict[name][0][i] = window.plot_dict[name][0][i].concat(data[i]);
+                    _this.plot_dict[name][0][i] = _this.plot_dict[name][0][i].concat(data[i]);
                 }
                 return 0;
             });
-            if (window.plot_dict[name][1] >= 0) {
+            if (_this.plot_dict[name][1] >= 0) {
                 //this.redraw();
-                Plotly.deleteTraces(current_object.upper_plot, [window.plot_dict[name][1]]);
-                Plotly.addTraces(current_object.upper_plot, window.plot_dict[name][0], [window.plot_dict[name][1]]);
+                Plotly.deleteTraces(current_object.upper_plot, [_this.plot_dict[name][1]]);
+                Plotly.addTraces(current_object.upper_plot, _this.plot_dict[name][0], [_this.plot_dict[name][1]]);
             }
         }
     }
 
     replace_data(data, name, info = "") {
-        if (window.plot_dict.hasOwnProperty(name)) {
+        var _this = this;
+        if (_this.plot_dict.hasOwnProperty(name)) {
             this.current_object = this;
-            window.plot_dict[name][0] = data;
+            _this.plot_dict[name][0] = data;
             if (info != "") {
-                window.plot_dict[name][2] = info
+                _this.plot_dict[name][2] = info
             }
 
-            Plotly.deleteTraces(current_object.upper_plot, [window.plot_dict[name][1]]);
-            Plotly.addTraces(current_object.upper_plot, window.plot_dict[name][0], [window.plot_dict[name][1]]);
+            Plotly.deleteTraces(current_object.upper_plot, [_this.plot_dict[name][1]]);
+            Plotly.addTraces(current_object.upper_plot, _this.plot_dict[name][0], [_this.plot_dict[name][1]]);
         }
         else {
             this.add_data(data, name);
@@ -430,10 +435,11 @@ export class GFXPlotter {
 
 
     draw_trace(name) {
+        var _this = this;
         // TODO: draw trace and handle errors of 'name' existance
-        window.plot_dict[name][1] = window.current_trace;
+        _this.plot_dict[name][1] = window.current_trace;
         window.current_trace++;
-        Plotly.addTraces(current_object.upper_plot, window.plot_dict[name][0]);
+        Plotly.addTraces(current_object.upper_plot, _this.plot_dict[name][0]);
         iziToast.info({
             title: name,
             icon: 'fas fa-info-circle',
@@ -444,19 +450,20 @@ export class GFXPlotter {
     }
 
     undraw_trace(name) {
+        var _this = this;
         // TODO: draw trace and handle errors of 'name' existance
         window.current_object = this;
-        var temp = window.plot_dict[name][1];
+        var temp = _this.plot_dict[name][1];
 
-        Plotly.deleteTraces(window.current_object.upper_plot, [window.plot_dict[name][1]]);
-        window.plot_dict[name][1] = -1;
+        Plotly.deleteTraces(window.current_object.upper_plot, [_this.plot_dict[name][1]]);
+        _this.plot_dict[name][1] = -1;
 
         window.current_trace--;
 
-        var keys = Object.keys(window.plot_dict);
+        var keys = Object.keys(_this.plot_dict);
         for (var i = 0; i < window.dict_len; i++) {
-            if (window.plot_dict[keys[i]][1] >= 0 && window.plot_dict[keys[i]][1] > temp)
-                window.plot_dict[keys[i]][1]--;
+            if (_this.plot_dict[keys[i]][1] >= 0 && _this.plot_dict[keys[i]][1] > temp)
+                _this.plot_dict[keys[i]][1]--;
         }
         iziToast.info({
             title: name,
@@ -468,6 +475,7 @@ export class GFXPlotter {
     }
 
     relegend() {
+        var _this = this;
         $('#legend_div').empty();
         var current_object = this;
         let data = current_object.upper_plot.data;
@@ -484,18 +492,18 @@ export class GFXPlotter {
                 var curr_legend = this;
                 var curr_name = this.innerHTML;
 
-                if (current_object.upper_plot.data[window.plot_dict[curr_name][1]].hasOwnProperty('visible')) {
-                    if (current_object.upper_plot.data[window.plot_dict[curr_name][1]]['visible'] == true) {
-                        Plotly.restyle(current_object.upper_plot, { visible: ["legendonly"] }, [window.plot_dict[curr_name][1]]);
+                if (current_object.upper_plot.data[_this.plot_dict[curr_name][1]].hasOwnProperty('visible')) {
+                    if (current_object.upper_plot.data[_this.plot_dict[curr_name][1]]['visible'] == true) {
+                        Plotly.restyle(current_object.upper_plot, { visible: ["legendonly"] }, [_this.plot_dict[curr_name][1]]);
                         curr_legend.style['opacity'] = 0.5;
                     }
                     else {
-                        Plotly.restyle(current_object.upper_plot, { visible: [true] }, [window.plot_dict[curr_name][1]]);
+                        Plotly.restyle(current_object.upper_plot, { visible: [true] }, [_this.plot_dict[curr_name][1]]);
                         curr_legend.style['opacity'] = 1;
                     }
                 }
                 else {
-                    Plotly.restyle(current_object.upper_plot, { visible: ["legendonly"] }, [window.plot_dict[curr_name][1]]);
+                    Plotly.restyle(current_object.upper_plot, { visible: ["legendonly"] }, [_this.plot_dict[curr_name][1]]);
                     curr_legend.style['opacity'] = 0.5;
                 }
             });
@@ -508,7 +516,7 @@ export class GFXPlotter {
                 if (window.plotly_focus) {
                     let settings_arr = new Array(window.current_trace);
                     settings_arr.fill("legendonly");
-                    settings_arr[window.plot_dict[curr_name][1]] = true;
+                    settings_arr[_this.plot_dict[curr_name][1]] = true;
 
                     Plotly.restyle(current_object.upper_plot, { visible: settings_arr }, [...Array(window.current_trace).keys()]);
                     $('.legend-elem').css("opacity", 0.5);
