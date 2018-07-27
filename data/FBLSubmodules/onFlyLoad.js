@@ -1,3 +1,5 @@
+// Most of this is not a good fit for the window
+
 _NKModels = {
     AxonHillockModels: {
         HodgkinHuxley:
