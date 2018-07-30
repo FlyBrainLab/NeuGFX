@@ -3,7 +3,7 @@ svgObj.selectAll("*").each(function (d, i) {
     if (this.getAttribute("label") != null) {
         var label = this.getAttribute("label");
         var labels = label.split("|");
-        console.log(labels);
+        //console.log(labels);
     }
 });
 
@@ -12,17 +12,52 @@ svgObj = d3.select(document.querySelector('svg'));
 
 svgObj.selectAll("*").each(function (d, i) {
     //d3.select(this).style("opacity", "0.3");
-    this.setAttribute("selected", "false");
+    this.setAttribute("selected", "true");
     this.setAttribute("hovered", "false");
 });
 
-svgObj.selectAll(".region").each(function (d, i) {
+window.updateCircuit = function() {
+    window.fbl.experimentConfig['cx'].disabled = [];
+    svgObj.selectAll(".region,.neuron").each(function (d, i) {
+        if (this.getAttribute("selected") == "false") {
+            window.fbl.experimentConfig['cx'].disabled.push(d3.select(this).attr("label"));
+        }
+    });
+};
+
+/* svgObj.selectAll(".region").each(function (d, i) {
     var label = this.getAttribute("label");
     if (label.indexOf("EB/") > -1) {
         var lab = +label.slice(-1);
         this.setAttribute("label", "EB/" + (9 - lab))
     }
 
+}); */
+
+svgObj.selectAll(".region,.neuron").each(function (d, i) {
+    d3.select(this).attr("hovered", "false");
+    d3.select(this).style("opacity", "0.6");
+    if (this.getAttribute("selected") == "false") {
+        d3.select(this).style("opacity", "0.15");
+    }
+    else if (this.getAttribute("selected") == "true") {
+        d3.select(this).style("opacity", "0.6");
+    }
+    d3.select('.svg-pan-zoom_viewport').style("opacity", "1");
+});
+
+svgObj.selectAll("*").on("mouseout", function (d, i) {
+        svgObj.selectAll(".region,.neuron").each(function (d, i) {
+            d3.select(this).attr("hovered", "false");
+            d3.select(this).style("opacity", "0.6");
+            if (this.getAttribute("selected") == "false") {
+                d3.select(this).style("opacity", "0.15");
+            }
+            else if (this.getAttribute("selected") == "true") {
+                d3.select(this).style("opacity", "0.6");
+            }
+            d3.select('.svg-pan-zoom_viewport').style("opacity", "1");
+        });
 });
 
 svgObj.selectAll("*").on("mouseover", function (d, i) {
@@ -30,8 +65,12 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
         var querylabel = this.getAttribute("label");
         svgObj.selectAll(".region,.neuron").each(function (d, i) {
             d3.select(this).attr("hovered", "false");
+            d3.select(this).style("opacity", "0.6");
             if (this.getAttribute("selected") == "false") {
-                d3.select(this).style("opacity", "0.3");
+                d3.select(this).style("opacity", "0.15");
+            }
+            else if (this.getAttribute("selected") == "true") {
+                d3.select(this).style("opacity", "0.6");
             }
             d3.select('.svg-pan-zoom_viewport').style("opacity", "1");
         });
@@ -44,12 +83,14 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
                 if (label.indexOf(querylabel) > -1) {
                     d3.select(this).style("opacity", "1");
                     d3.select(this).attr("hovered", "true");
-                    console.log(label);
+                    if (d3.select(this).attr("selected") == "false")
+                    d3.select(this).style("opacity", "0.4");
+                    //console.log(label);
                 }
                 var _this = this;
                 labels.forEach(function (d) {
                     if (d.indexOf('-') > -1) {
-                        console.log("Found label...")
+                        //console.log("Found label...")
                         //var labels = d.split("-");
                         if (d.indexOf(querylabel) > -1) {
                             d3.select(_this).style("opacity", "1");
@@ -58,7 +99,11 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
                             var children = d3.selectAll(_this.childNodes);
                             try {children.style("opacity", "1");} catch {};
                             try {children.attr("hovered", "true");} catch {};
-                            
+                            if (d3.select(_this).attr("selected") == "false")
+                            {
+                                d3.select(_this).style("opacity", "0.4");
+                                try {children.style("opacity", "0.4");} catch {};
+                            }
                             //console.log(_this);
                         }
                     }
@@ -72,14 +117,18 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
     });
 });
 
+svgObj.selectAll(".neuron path").style("fill","none");
+
+svgObj.selectAll("text").style("pointer-events","none");
+    
 svgObj.selectAll("*").on("click", function (d, i) {
-    console.log("On Click!");
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         //d3.select(this).style("opacity", "0.3");
         if (this.getAttribute("hovered") == "true") {
             if (this.getAttribute("selected") == "false")  {
             var _this = this;
             d3.select(_this).attr("selected", "true");
+            d3.select(_this).style("opacity", "1");
             var children = d3.selectAll(_this.childNodes);
             try {children.style("opacity", "1");} catch {};
             try {children.attr("selected", "true");} catch {};
@@ -88,12 +137,18 @@ svgObj.selectAll("*").on("click", function (d, i) {
         {
                 var _this = this;
                 d3.select(_this).attr("selected", "false");
+                d3.select(_this).style("opacity", "0.4");
                 var children = d3.selectAll(_this.childNodes);
-                try {children.style("opacity", "1");} catch {};
+                //try {children.style("opacity", "1");} catch {};
                 try {children.attr("selected", "false");} catch {};
+                if (d3.select(_this).attr("selected") == "false")
+                {
+                    try {children.style("opacity", "0.4");} catch {};
+                }
         }
     }
     });
+    updateCircuit();
 });
 
 function toggleByLabel(a) {
@@ -107,7 +162,7 @@ function toggleByLabel(a) {
         hideOrShow = "hide";
     } else {
         neu.attr("visible", "true");
-        neu.style("opacity", "1.0");
+        neu.style("opacity", "0.8");
         $("#btn-" + a).html('&FilledSmallSquare; ' + a)
         hideOrShow = "unhide";
     }
@@ -132,4 +187,53 @@ function toggleByLabel(a) {
             }
         });
 }
+
+var neurons = svgObj.selectAll(".neuron");
+
+var regions = svgObj.selectAll(".region")
+    .on("dblclick", function(d,i){
+        //console.log("dblclicked!");
+
+        var pre_id_list = [];
+        var post_id_list = [];
+        var label_this = d3.select(this).attr("label");
+
+        neurons.each(function(d,i){
+            if(d3.select(this).attr("selected")=="true"){
+                var id_neuron = d3.select(this).attr("id");
+                var pre_region = d3.select(this).attr("presynaptic");
+                if(pre_region != null){
+                    if(pre_region.indexOf(label_this)!=-1){
+                        pre_id_list.push(id_neuron);
+                    }
+                }
+
+                var post_region = d3.select(this).attr("postsynaptic");
+                if(post_region != null){
+                    if(post_region.indexOf(label_this)!=-1){
+                        post_id_list.push(id_neuron);
+                    }
+                }
+            }
+
+        });
+        console.log("Presynaptic neurons' id:");
+        console.log(pre_id_list);
+        console.log("Postsynaptic neurons' id");
+        console.log(post_id_list);
+        if (pre_id_list.length>0 && post_id_list.length>0)
+        {
+            window.IOData = {
+                inputs: pre_id_list,
+                outputs: post_id_list
+            };
+            window.IOName = label_this;
+            window.fbl.loadSubmodule('data/FBLSubmodules/onIOLoad.js');
+        }
+
+    });
+
+
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex",function() {window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") });});
+
 

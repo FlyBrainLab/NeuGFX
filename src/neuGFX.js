@@ -235,6 +235,45 @@ class NeuGFX {
     this.plotMode = "SVG";
     try { this.clearGraph(); } catch { };
     this.clear();
+    d3.select(this.container).append("svg");
+    var svgElement = document.querySelector('svg');
+    $(svgElement).width('100%');
+    $(svgElement).height('100%');
+    var panZoomSVG = svgPanZoom(svgElement, {
+      dblClickZoomEnabled: false,
+      preventMouseEventsDefault: false
+    });
+    window.addEventListener("resize", function () {
+      console.log('Resized the SVG...');
+      panZoomSVG.resize(); 
+      panZoomSVG.updateBBox(); 
+      panZoomSVG.fit();
+      panZoomSVG.center();
+    });
+    callback();
+  }
+
+  refreshSVG() {
+    var svgElement = document.querySelector('svg');
+    $(svgElement).width('100%');
+    $(svgElement).height('100%');
+    var panZoomSVG = svgPanZoom(svgElement, {
+      dblClickZoomEnabled: false,
+      preventMouseEventsDefault: false
+    });
+    window.addEventListener("resize", function () {
+      console.log('Resized the SVG...');
+      panZoomSVG.resize(); 
+      panZoomSVG.updateBBox(); 
+      panZoomSVG.fit();
+      panZoomSVG.center();
+    });
+  }
+
+  loadSVG(url, callback = function () { }) {
+    this.plotMode = "SVG";
+    try { this.clearGraph(); } catch { };
+    this.clear();
     $(this.container).load(url, function () {
       var svgElement = document.querySelector('svg');
       $(svgElement).width('100%');
@@ -256,6 +295,7 @@ class NeuGFX {
 
   loadGEXF(url, callback = function () { }) {
     this.plotMode = "sigma";
+    try { this.clearGraph(); } catch { };
     this.clear();
     this.CircuitOptions.url = url;
     this.initializeGEXF(this.CircuitOptions);

@@ -29,7 +29,7 @@ $('.myclass line').hover(function () {
 
 
 window._neuGFX.mods.FlyBrainLab.loadNewLPU();
-
+svgObj.selectAll("text").style("pointer-events","none");
 /*$('#current_constraints').scrollbar();
 $('#current_notebook_url').scrollbar();
 $('.options-form').scrollbar();
