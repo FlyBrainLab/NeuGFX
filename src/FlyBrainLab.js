@@ -82,6 +82,10 @@ export class FlyBrainLab {
         this.gfx.sendMessage(message);
     }
 
+    clearSVG() {
+        this.gfx.clearSVG();
+    }
+
     refreshSVG() {
         this.gfx.refreshSVG();
     }
@@ -491,6 +495,7 @@ export class FlyBrainLab {
             } else {
                 $(this).attr('inactive', 'true');
             }
+            try { window.updateCircuit();} catch {};
         });
 
         $('svg g.neuron_class,.neuron_class').on('click', function () {
@@ -514,6 +519,7 @@ export class FlyBrainLab {
                 });
 
             }
+            try { window.updateCircuit();} catch {};
         });
         setTimeout(function () {
             $('.default_class, .synapse_class, .neuron_class').qtip({

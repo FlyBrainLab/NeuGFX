@@ -253,6 +253,13 @@ class NeuGFX {
     callback();
   }
 
+  clearSVG() {
+    this.plotMode = "SVG";
+    try { this.clearGraph(); } catch { };
+    this.clear();
+    d3.select(this.container).append("svg");
+  }
+
   refreshSVG() {
     var svgElement = document.querySelector('svg');
     $(svgElement).width('100%');
