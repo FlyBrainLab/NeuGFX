@@ -153,7 +153,7 @@ export class FlyBrainLab {
         $(a).click( function () {
             window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.") });
         });
-        console.log("Link Path:", this.linkPathConfig);
+        //console.log("Link Path:", this.linkPathConfig);
         for (var i = 1; i < this.linkPathConfig.length; i++) {
             var a = document.createElement('a');
             var linkText = document.createTextNode(this.linkPathConfig[i].name);
@@ -210,6 +210,10 @@ export class FlyBrainLab {
             }
             if (id === 'eb' || id === 'pb' || id === 'fb') {
                 window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
+            if (id === 'lop_r' || id === 'lop_l') {
+                window.fbl.loadSubmodule('data/FBLSubmodules/onLOPLoad.js');
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
         };
@@ -356,8 +360,8 @@ export class FlyBrainLab {
             c_string = c_string + " " + lexicon[matches[i]];
         }*/
         var understood = false;
-        console.log(c_string);
-        console.log(c_string.indexOf('load experiment'));
+        //console.log(c_string);
+        //console.log(c_string.indexOf('load experiment'));
         if (c_string.indexOf('load experiment') !== -1) {
             //sendAlert('log','Generated Search String: ' + c_string);
             this.sendMessage({ messageType: 'GFXMessage', args: { content: 'Generated Search String: ' + c_string, type: "log" } }, '*');
@@ -457,13 +461,13 @@ export class FlyBrainLab {
 
     loadNewLPU() {
         $("svg g").each(function () {
-            console.log($(this).find('title').text());
+            //console.log($(this).find('title').text());
             $(this).attr("tooltip-data", $(this).find('title').text());
             //$(this).find('title').remove();
-            console.log($(this).find('tooltip-data').text());
+            //console.log($(this).find('tooltip-data').text());
         });
         $("svg g.synapse_class").each(function () {
-            console.log($(this).find('tooltip-data').text());
+            //console.log($(this).find('tooltip-data').text());
             var synapse_info = $(this).attr('tooltip-data').split(' :: ')[2];
             if (typeof synapse_info === 'string') {
                 $(this).attr("synapse_info", synapse_info);
@@ -474,14 +478,13 @@ export class FlyBrainLab {
         });
 
         $("svg g.neuron_class").each(function () {
-            console.log($(this).find('tooltip-data').text());
+            //console.log($(this).find('tooltip-data').text());
             var name = $(this).attr('tooltip-data').split(' :: ')[2];
             $(this).attr("name", name);
             $(this).attr("tags", $(this).attr("name") + ' ' + $(this).attr('tooltip-data').split(' :: ')[3]);
         });
 
         $('svg g.synapse_class,.synapse_class').on('click', function () {
-            //console.log(this);
             if ($(this).attr('inactive')) {
                 $(this).removeAttr('inactive');
                 var presyn = $(this).attr('presyn');
@@ -526,7 +529,7 @@ export class FlyBrainLab {
                 content: {
                     text: function (api) {
                         //return $(this).find('title').text().split(' :: ')[1];
-                        console.log($(this).attr('tooltip-data'));
+                        //console.log($(this).attr('tooltip-data'));
                         return $(this).attr('tooltip-data').split(' :: ')[1];
                     },
                     title: {

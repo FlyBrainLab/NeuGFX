@@ -311,3 +311,36 @@ border-left-width: 0;
     -webkit-filter: blur(2px);
     transition: 0.5s;
 }
+
+
+
+#sliderRange {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;   
+    background: #30473c;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+#sliderRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%; 
+    background: rgb(143, 226, 146);
+    cursor: pointer;
+}
+
+#sliderRange::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgb(143, 226, 146);
+    cursor: pointer;
+}
+

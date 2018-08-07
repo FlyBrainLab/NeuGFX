@@ -231,28 +231,6 @@ class NeuGFX {
     this.plotter.createMockData();
   }
 
-  loadSVG(url, callback = function () { }) {
-    this.plotMode = "SVG";
-    try { this.clearGraph(); } catch { };
-    this.clear();
-    d3.select(this.container).append("svg");
-    var svgElement = document.querySelector('svg');
-    $(svgElement).width('100%');
-    $(svgElement).height('100%');
-    var panZoomSVG = svgPanZoom(svgElement, {
-      dblClickZoomEnabled: false,
-      preventMouseEventsDefault: false
-    });
-    window.addEventListener("resize", function () {
-      console.log('Resized the SVG...');
-      panZoomSVG.resize(); 
-      panZoomSVG.updateBBox(); 
-      panZoomSVG.fit();
-      panZoomSVG.center();
-    });
-    callback();
-  }
-
   clearSVG() {
     this.plotMode = "SVG";
     try { this.clearGraph(); } catch { };
@@ -279,6 +257,7 @@ class NeuGFX {
 
   loadSVG(url, callback = function () { }) {
     this.plotMode = "SVG";
+    $('.activitySlider').remove();
     try { this.clearGraph(); } catch { };
     this.clear();
     $(this.container).load(url, function () {
@@ -302,6 +281,7 @@ class NeuGFX {
 
   loadGEXF(url, callback = function () { }) {
     this.plotMode = "sigma";
+    $('.activitySlider').remove();
     try { this.clearGraph(); } catch { };
     this.clear();
     this.CircuitOptions.url = url;
