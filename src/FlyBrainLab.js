@@ -3,7 +3,7 @@ import svgPanZoom from "svg-pan-zoom/src/svg-pan-zoom.js";
 import GraphicsExplorer from "./graphics_explorer.js";
 import * as d3 from 'd3';
 import { event as currentEvent } from 'd3-selection';
-import * as iziToast from "iziToast";
+import * as iziToast from "izitoast";
 import * as Fuse from 'fuse.js';
 import Qtip2 from 'qtip2';
 

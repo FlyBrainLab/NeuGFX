@@ -93,3 +93,12 @@ $('.inactivate_all_button').on('click', function () {
 
 
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body",function() {});
+
+
+$.getJSON("https://ffbodata.neuronlp.fruitflybrain.org/" + "mb_activity_data.json", function(json) {
+    window.IOActivities = json;
+    window.IOActivityLen = 100;
+    window.IOSelector = "tags";
+    window.IOName = "Mushroom Body";
+    window.fbl.loadSubmodule('data/FBLSubmodules/onActivityLoad.js');
+  });

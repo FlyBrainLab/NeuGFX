@@ -23,7 +23,7 @@ import * as d3 from 'd3';
 import { event as currentEvent } from 'd3-selection';
 
 
-import * as iziToast from "iziToast"
+import * as iziToast from "izitoast"
 import dat from '../etc/dat.gui';
 
 // Our Own Sub-Modules
@@ -248,8 +248,8 @@ class NeuGFX {
     });
     window.addEventListener("resize", function () {
       console.log('Resized the SVG...');
-      panZoomSVG.resize(); 
-      panZoomSVG.updateBBox(); 
+      panZoomSVG.resize();
+      panZoomSVG.updateBBox();
       panZoomSVG.fit();
       panZoomSVG.center();
     });
@@ -270,8 +270,8 @@ class NeuGFX {
       });
       window.addEventListener("resize", function () {
         console.log('Resized the SVG...');
-        panZoomSVG.resize(); 
-        panZoomSVG.updateBBox(); 
+        panZoomSVG.resize();
+        panZoomSVG.updateBBox();
         panZoomSVG.fit();
         panZoomSVG.center();
       });
@@ -375,7 +375,7 @@ class NeuGFX {
         dragListener.bind('dragend', function (event) {
           window.s.settings('drawEdges', true);
         });
-        // this is needed in case the original JSON doesn't have color / size / x-y attributes 
+        // this is needed in case the original JSON doesn't have color / size / x-y attributes
         var i,
           nodes = window.s.graph.nodes(),
           len = nodes.length;

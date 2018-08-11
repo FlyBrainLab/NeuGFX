@@ -6,7 +6,9 @@ animateStep = function (t) {
     for (var el_name in IOActivities) {
         d3.selectAll(".neuron_class,.synapse_class").filter(function (d, i) {
             try {
-                if (d3.select(this).attr("label") == el_name) {
+              //console.log(el_name);
+                if ((d3.select(this).attr(IOSelector).indexOf(el_name)>=0)) {
+
                     return true;
                 }
             }
