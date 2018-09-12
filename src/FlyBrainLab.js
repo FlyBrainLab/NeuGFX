@@ -505,6 +505,9 @@ export class FlyBrainLab {
             if ($(this).attr('inactive')) {
                 $(this).removeAttr('inactive');
                 var neuron = $(this).attr('name');
+                var a = {};
+                a[neuron] = true;
+                try { window.toggleByDiagramName(a, "true");} catch {};
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).removeAttr('inactive');
@@ -514,6 +517,9 @@ export class FlyBrainLab {
             } else {
                 $(this).attr('inactive', 'true');
                 var neuron = $(this).attr('name');
+                var a = {};
+                a[neuron] = true;
+                try { window.toggleByDiagramName(a, "false");} catch {};
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).attr('inactive', 'true');

@@ -36,7 +36,7 @@ export class GFXPlotter {
         this.upper_layout = {
             showlegend: false,
             /*
-                         xaxis:
+                         xaxis: 
                          {title: x_label, gridcolor: '#444', tickfont: {
                     family: font1,
                     size: 14,
@@ -46,7 +46,7 @@ export class GFXPlotter {
                     size: 18,
                     color: '#bbb'
                 }},
-                         yaxis:
+                         yaxis: 
                          {fixedrange: true, title: y_label, gridcolor: '#444', tickfont: {
                     family: font1,
                     size: 14,
@@ -55,7 +55,7 @@ export class GFXPlotter {
                     family: font2,
                     size: 18,
                     color: '#bbb'
-                }},
+                }}, 
             */
             yaxis:
                 { fixedrange: true },
@@ -182,7 +182,7 @@ export class GFXPlotter {
 
         /*
         var ps = new PerfectScrollbar('.list_container');
-
+        
         iziToast.success({
             title: 'Welcome',
             icon: 'fas fa-check-circle',
@@ -241,7 +241,7 @@ export class GFXPlotter {
             }
         });
 
-        // Zoom Callbacks:
+        // Zoom Callbacks: 
         var current_object = this;
         /*
         // DEBUG: catch restyle events
@@ -481,7 +481,7 @@ export class GFXPlotter {
         let data = current_object.upper_plot.data;
         var x;
 
-
+        
 
         for (x = 0; x < data.length; x++) {
             var new_legend = current_object.d3.select('#legend_div').append('h6').attr("class", "legend-elem").text(data[x].name).attr("style", "color:" + window.plotly_colors[x % 10]);
@@ -592,7 +592,7 @@ export class GFXPlotter {
                 z: d3.range(0, data[i].length, 1).map(function (x) { return i; }),
                 type: 'scatter',
                 name: names[i]
-            },
+            }, 
             names[i],
             "<div style=\"width:50%;\">" +
             "<h1>" + names[i] + "</h1>" +

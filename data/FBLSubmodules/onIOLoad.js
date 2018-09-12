@@ -373,6 +373,14 @@ $(neuron_selector).on("click contextmenu", function (e) {
     }
 });
 
+$(neuron_selector).on("click", function (e) {
+    label = $(this).attr('label');
+    console.log('Toggling element...');
+    console.log(label);
+    toggleByDiagramName(label);
+});
+
+
 window.renewCircuit();
 
 

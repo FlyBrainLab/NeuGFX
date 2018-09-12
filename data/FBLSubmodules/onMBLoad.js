@@ -93,12 +93,86 @@ $('.inactivate_all_button').on('click', function () {
 
 
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body",function() {});
+window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "kc_mb_ex_all" });
 
 
-$.getJSON("https://ffbodata.neuronlp.fruitflybrain.org/" + "mb_activity_data.json", function(json) {
-    window.IOActivities = json;
-    window.IOActivityLen = 100;
-    window.IOSelector = "tags";
-    window.IOName = "Mushroom Body";
-    window.fbl.loadSubmodule('data/FBLSubmodules/onActivityLoad.js');
-  });
+
+$.getJSON("https://data.flybrainlab.fruitflybrain.org/mb_gfx_correlates.json", function(data) {
+  window.bioMatches = data;
+  window.bioWorkspace = [];
+  for(var i=0;i<bioMatches[1].length;i++)
+    {
+        window.bioWorkspace[bioMatches[1][i]] = true;
+    }
+
+});
+
+
+toggleWorkspaceByUname = function (uname, type) {
+    if (type == "true")
+    {
+        uname = '"' + uname.join('","') + '"';
+        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
+    }
+    else if (type == "false")
+    {
+        uname = '"' + uname.join('","') + '"';
+        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: uname });
+    }
+    else
+    {
+        var pos_unames = [];
+        var neg_unames = [];
+        for (var i = 0; i < uname.length; i++) {
+            if (uname[i] == true) {
+                pos_unames.push(uname[i]);
+                window.bioWorkspace[uname[i]] = false;
+            }
+            else
+            {
+                neg_unames.push(uname[i]);
+                window.bioWorkspace[uname[i]] = true;
+            }
+        }
+        uname = '"' + pos_unames.join('","') + '"';
+        if (pos_unames.length > 0)
+        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: uname });
+
+        uname = '"' + neg_unames.join('","') + '"';
+    
+        if (neg_unames.length > 0)
+        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
+    
+}
+}
+
+toggleByDiagramName = function (diagramNames, type) {
+    console.log(diagramNames);
+    var toggled = {};
+    if (typeof diagramNames === 'object') {
+    }
+    else {
+        a = {};
+        a[diagramNames] = true;
+        diagramNames = a;
+    }
+    for (var diagramName in diagramNames) {
+        for (var i = 0; i < bioMatches[0].length; i++) {
+            if (bioMatches[0][i].includes(diagramName)) {
+                console.log('Found a match!');
+                console.log(type);
+                console.log(diagramName);
+                toggled[bioMatches[1][i]] = true;
+                /*if (!toggled.includes(bioMatches[1][i])) {
+                    toggleWorkspaceByUname(bioMatches[1][i]);
+                    toggled.push(bioMatches[1][i]);
+                }*/
+            }
+        }
+    }
+    var toggled_keys = [];
+    for (var key in toggled) {
+        toggled_keys.push(key);
+    }
+    toggleWorkspaceByUname(toggled_keys, type);
+}
