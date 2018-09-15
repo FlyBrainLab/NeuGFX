@@ -93,7 +93,9 @@ $('.inactivate_all_button').on('click', function () {
 
 
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body",function() {});
-window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "kc_mb_ex_all" });
+window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_ex_all" });
+//window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_kc_mbons_20syn_11" });
+//window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "kc_dan_20syn" });
 
 
 
