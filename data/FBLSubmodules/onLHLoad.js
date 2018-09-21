@@ -92,15 +92,18 @@ $('.inactivate_all_button').on('click', function () {
 });
 
 
-window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body",function() {});
-window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_ex_all" });
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Lateral Horn",function() {});
+window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "frechter_lhs_filtered_conservative" });
 //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_kc_mbons_20syn_11" });
 //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "kc_dan_20syn" });
 
 
 
-$.getJSON("https://data.flybrainlab.fruitflybrain.org/mb_gfx_correlates.json", function (data) {
-    window.bioMatches = data;
+$.getJSON("https://data.flybrainlab.fruitflybrain.org/lh_all_gfx_correlates.json", function (data) {
+    window.bioMatchesDefault = data;
+    window.bioMatches = [[],[]];
+    window.bioMatches[0] = window.bioMatchesDefault[2];
+    window.bioMatches[1] = window.bioMatchesDefault[0];
     window.bioWorkspace = [];
     for (var i = 0; i < bioMatches[1].length; i++) {
         window.bioWorkspace[bioMatches[1][i]] = true;
@@ -159,7 +162,7 @@ toggleByDiagramName = function (diagramNames, type) {
     }
     for (var diagramName in diagramNames) {
         for (var i = 0; i < bioMatches[0].length; i++) {
-            if (bioMatches[0][i].includes(diagramName)) {
+            if (bioMatches[0][i] == (diagramName)) {
                 console.log('Found a match!');
                 console.log(type);
                 console.log(diagramName);
@@ -177,3 +180,11 @@ toggleByDiagramName = function (diagramNames, type) {
     }
     toggleWorkspaceByUname(toggled_keys, type);
 }
+
+
+$('svg g.neuron_class').each(function () {
+    if ($(this).attr('tags').includes('lhin'))
+    {
+        $(this).attr('inactive', 'true');
+    }
+});
