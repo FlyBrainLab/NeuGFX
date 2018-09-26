@@ -204,6 +204,10 @@ export class FlyBrainLab {
                 window.fbl.loadFBLSVG('mb', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
+            if (id === 'lh_r' || id === 'lh_l') {
+                window.fbl.loadFBLSVG('lh', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onLHLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
             if (id === 'al_r' || id === 'al_l') {
                 window.fbl.loadFBLSVG('al', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onALLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');

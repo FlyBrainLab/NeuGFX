@@ -139,6 +139,13 @@ class NeuGFX {
         case 'loadCircuit': {
           window._neuGFX.sendAlert("Loading a circuit...");
           window._neuGFX.mods.FlyBrainLab.loadCircuit(event.data.data);
+          window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "homecartridge" });
+          break;
+        }
+        case 'getExperimentConfig': {
+          window._neuGFX.sendAlert("Loading experiment settings...");
+          var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
+          window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
           break;
         }
         case 'updateActiveNeuropils': {
