@@ -25,6 +25,28 @@ window.updateCircuit = function () {
     });
 };
 
+window.IOName = 'cx';
+window.renewCircuit = function () {
+    if (IOName in window.fbl.experimentConfig) {
+        if ('disabled' in window.fbl.experimentConfig[IOName]) {
+            console.log('Found config: ', window.fbl.experimentConfig[IOName].disabled)
+            var arrayLength = window.fbl.experimentConfig[IOName].disabled.length;
+            for (var i = 0; i < arrayLength; i++) {
+                $(".region,.neuron").each(function (index, value) {
+                    //console.log(d3.select(this).attr("label"));
+                    //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
+                    if (d3.select(this).attr("label") == window.fbl.experimentConfig[IOName].disabled[i]) {
+                        if ($(this).is('.region,.neuron')) {
+                            d3.select(this).attr("selected", "false");
+                        };
+                    }
+                });
+            }
+        }
+    }
+    window.updateCircuit();
+};
+
 /* svgObj.selectAll(".region").each(function (d, i) {
     var label = this.getAttribute("label");
     if (label.indexOf("EB/") > -1) {
@@ -171,7 +193,7 @@ svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
         }
     }
     //});
-    updateCircuit();
+    window.updateCircuit();
 });
 
 function toggleByLabel(a) {
@@ -227,14 +249,18 @@ var regions = svgObj.selectAll(".region")
                 var pre_region = d3.select(this).attr("presynaptic");
                 if (pre_region != null) {
                     if (pre_region.indexOf(label_this) != -1) {
-                        pre_id_list.push(id_neuron);
+                        var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
+                        if (neuron_id_index> -1)
+                            pre_id_list.push(window.bioMatches[2][neuron_id_index]);
                     }
                 }
 
                 var post_region = d3.select(this).attr("postsynaptic");
                 if (post_region != null) {
                     if (post_region.indexOf(label_this) != -1) {
-                        post_id_list.push(id_neuron);
+                        var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
+                        if (neuron_id_index> -1)
+                            post_id_list.push(window.bioMatches[2][neuron_id_index]);
                     }
                 }
             }
@@ -257,7 +283,7 @@ var regions = svgObj.selectAll(".region")
 
 
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex", function () { window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); });
-window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "centralcomplex_diagram" });
+window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "centralcomplex_diagram_v2" });
 
 $.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", function (data) {
     window.bioMatches = data;
@@ -338,3 +364,4 @@ toggleByDiagramName = function (diagramNames, type) {
 }
 
 
+window.renewCircuit();

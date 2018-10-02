@@ -42,14 +42,14 @@ wireAutomatically(IOData);
 
 generatePinMap = function (IOData, IOSynapses, IOName) {
     window._neuGFX.mods.FlyBrainLab.clearSVG();
-    var neuronWidth = 64;
+    var neuronWidth = 160;
     var neuronDX = 2;
     var neuronHeight = 32;
 
-    neuronInX = function (i) { return (i + 1) * 96 + 25 };
+    neuronInX = function (i) { return (i + 1) * 196 + 25 };
     neuronInY = function (i) { return 125 };
 
-    neuronOutX = function (i) { return 96 + 48 + (i + 1) * 96 + 25 };
+    neuronOutX = function (i) { return 96 + 48 + (i + 1) * 196 + 25 };
     neuronOutY = function (i) { return 325 };
 
     svgObj = d3.select(document.querySelector('svg'));

@@ -94,7 +94,7 @@ $('.inactivate_all_button').on('click', function () {
 });
 
 
-window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body (Adult)",function() {});
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Mushroom Body (Larva)",function() {});
 window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_ex_all" });
 //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "mb_kc_mbons_20syn_11" });
 //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "kc_dan_20syn" });
@@ -184,6 +184,6 @@ toggleByDiagramName = function (diagramNames, type) {
 
 window.switchLPU = function () {
     window.fbl.popFBLPath();
-    window.fbl.loadFBLSVG('mb_larva', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLarvaLoad.js'); console.log("Submodule loaded.") });
+    window.fbl.loadFBLSVG('mb', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
 }
 
