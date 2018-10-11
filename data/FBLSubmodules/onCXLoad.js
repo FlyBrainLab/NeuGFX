@@ -36,9 +36,9 @@ window.renewCircuit = function () {
                     //console.log(d3.select(this).attr("label"));
                     //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
                     if (d3.select(this).attr("label") == window.fbl.experimentConfig[IOName].disabled[i]) {
-                        if ($(this).is('.region,.neuron')) {
+                        // if ($(this).is('.region,.neuron')) {
                             d3.select(this).attr("selected", "false");
-                        };
+                        // };
                     }
                 });
             }
@@ -146,6 +146,81 @@ svgObj.selectAll(".neuron path").style("fill", "none");
 
 svgObj.selectAll("text").style("pointer-events", "none");
 
+window.activateElement = function(_this, sendNLP) {
+    d3.select(_this).attr("selected", "true");
+    d3.select(_this).style("opacity", "1");
+    var children = d3.selectAll(_this.childNodes);
+    try { children.style("opacity", "1"); } catch { };
+    try { children.attr("selected", "true"); } catch { };
+    var toggleLabels = {};
+    toggleLabels[_this.getAttribute("label")] = true;
+    if (_this.getAttribute("label") != null) {
+        var label = _this.getAttribute("label");
+        var labels = label.split("|");
+        labels.forEach(function (d) {
+            toggleLabels[d] = true;
+        });
+    }
+    if (sendNLP == true)
+    toggleByDiagramName(toggleLabels, "true");
+}
+
+window.deactivateAll = function() {
+    
+    svgObj.selectAll(".region,.neuron").each(function (d, i) {
+        window.deactivateElement(this, false);
+    });
+}
+
+window.deactivateElement = function(_this, sendNLP) {
+    console.log(d3.select(_this));
+    d3.select(_this).attr("selected", "false");
+    d3.select(_this).style("opacity", "0.4");
+    var children = d3.selectAll(_this.childNodes);
+    //try {children.style("opacity", "1");} catch {};
+    try { children.attr("selected", "false"); } catch { };
+    if (d3.select(_this).attr("selected") == "false") {
+        try { children.style("opacity", "0.4"); } catch { };
+    }
+    var toggleLabels = {};
+    toggleLabels[_this.getAttribute("label")] = true;
+    if (_this.getAttribute("label") != null) {
+        var label = _this.getAttribute("label");
+        var labels = label.split("|");
+        labels.forEach(function (d) {
+            toggleLabels[d] = true;
+        });
+    }
+    if (sendNLP == true)
+    toggleByDiagramName(toggleLabels, "false");
+}
+
+window.toggleByID = function (label, type) {
+    if (bioMatches[1].indexOf(label) > -1) {
+        label = bioMatches[0][bioMatches[1].indexOf(label)];
+        // console.log('Label is now:',label)
+    }
+    var neurons = svgObj.selectAll(".neuron,.region");
+    neurons.each(function (d, i) {
+        var label_pre = d3.select(this).attr("presynaptic");
+        var label_pos = d3.select(this).attr("postsynaptic");
+        var label_label = d3.select(this).attr("label");
+        var label_this = (label_pre == null ? '' : label_pre) + ' ' + (label_pos == null ? '' : label_pos) + ' ' + (label_label == null ? '' : label_label);
+        // console.log(label_this);
+        // if (typeof label_this === 'string' || label_this instanceof String) {
+            if (label_this.includes(label)) {
+                // console.log('Found match!');
+                // console.log(label_this);
+                // console.log(label);
+                if (type == true)
+                    activateElement(this, false);
+                if (type == false)
+                    deactivateElement(this, false);
+            }
+        // }
+    });
+};
+
 svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
     //svgObj.selectAll(".region,.neuron").each(function (d, i) {
     //d3.select(this).style("opacity", "0.3");
@@ -231,6 +306,38 @@ function toggleByLabel(a) {
                 }
             }
         });
+}
+
+
+function modelUpdate(NLPInput) {
+    /**
+     * Updates the workspace according to server commands.
+     * 
+     * @example modelUpdate({command: "show", elements: ["R1","R2"]});
+     * @example modelUpdate({command: "add", elements: ["L2"]});
+     * 
+     * @param {dict} NLPInput A dictionary with two keys, command and elements. Command is one of "show", "add" and "remove"; elements is an array of strings.
+     */
+    console.log('modelUpdate Input:', NLPInput);
+    if (NLPInput.command == "show") {
+        window.deactivateAll();
+        NLPInput.elements.forEach(function (element) {
+            // element = element.replace('a','alpha');
+            toggleByID(element, true);
+        });
+    }
+    if (NLPInput.command == "remove") {
+        NLPInput.elements.forEach(function (element) {
+            // element = element.replace('a','alpha');
+            toggleByID(element, false);
+        });
+    }
+    if (NLPInput.command == "add") {
+        NLPInput.elements.forEach(function (element) {
+            // element = element.replace('a','alpha');
+            toggleByID(element, true);
+        });
+    }
 }
 
 var neurons = svgObj.selectAll(".neuron");
