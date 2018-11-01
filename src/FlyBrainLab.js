@@ -64,10 +64,11 @@ export class FlyBrainLab {
         }
     }
 
-    loadCircuit(url) {
+    loadCircuit(url, callback = null) {
         if (this.circuitName != url) {
             this.gfx.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/' + url + '.svg', callback);
             this.circuitName = url;
+            this.addCircuit(url);
         }
     }
 
