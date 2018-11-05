@@ -142,6 +142,10 @@ class NeuGFX {
           // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "homecartridge" });
           break;
         }
+        case 'loadJS': {
+          window._neuGFX.mods.FlyBrainLab.loadSubmodule(event.data.data);
+          break;
+        }
         case 'getExperimentConfig': {
           window._neuGFX.sendAlert("Loading experiment settings...");
           var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
