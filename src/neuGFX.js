@@ -152,6 +152,11 @@ class NeuGFX {
           window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
           break;
         }
+        case 'setExperimentConfig': {
+          window._neuGFX.sendAlert("Loading experiment settings...");
+          window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
+          break;
+        }
         case 'updateActiveNeuropils': {
           window._neuGFX.mods.FlyBrainLab.updateActiveNeuropils(event.data.data);
           break;

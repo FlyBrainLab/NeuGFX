@@ -358,7 +358,7 @@ var regions = svgObj.selectAll(".region")
                     if (pre_region.indexOf(label_this) != -1) {
                         var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
                         if (neuron_id_index> -1)
-                            pre_id_list.push(window.bioMatches[2][neuron_id_index]);
+                            pre_id_list.push(window.bioMatches[0][neuron_id_index]);
                     }
                 }
 
@@ -367,7 +367,7 @@ var regions = svgObj.selectAll(".region")
                     if (post_region.indexOf(label_this) != -1) {
                         var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
                         if (neuron_id_index> -1)
-                            post_id_list.push(window.bioMatches[2][neuron_id_index]);
+                            post_id_list.push(window.bioMatches[0][neuron_id_index]);
                     }
                 }
             }

@@ -41,6 +41,19 @@ function modelUpdate(NLPInput) {
     }
 }
 
+window.updateCircuit = function () {
+    var lpu_name = 'cartridge_' + window.customCircuitAttributes['cartridge_num'];
+    window.fbl.experimentConfig[lpu_name] = {};
+    window.fbl.experimentConfig[lpu_name].disabled = [];
+    neuList.forEach(function (element) {
+        element = element.replace('a','alpha');
+        var neu = svgObj.select("#" + element);
+        if (neu.attr("visible") == "false") {
+            window.fbl.experimentConfig[lpu_name].disabled.push(element);
+        };
+    });
+};
+
 /*
  * Create neuron list
  */
@@ -134,6 +147,7 @@ function toggleByID(a, echo = true) {
         else
             window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: hideOrShow + " " + b + " home" });
     }
+    window.updateCircuit();
 }
 for (var i = 0; i < neuList.length; i++) {
     var id = neuList[i];
@@ -446,7 +460,7 @@ window._simulate = function () {
     window._neuGFX.mods.Plotter.addExternalData(data, uids,"Time [s]","Voltage [mV]");
 }
 
-window._neuGFX.mods.FlyBrainLab.addFBLPath("Cartridge",function() {});
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Cartridge " + window.customCircuitAttributes['cartridge_num'],function() {});
 console.log('Loading was successful...');
 window.onAddAllClick();
 

@@ -65,10 +65,10 @@ generatePinMap = function (IOData, IOSynapses, IOName) {
         i = IOData.inputs.findIndex(x => x === IOSynapses[k][0]);
         j = IOData.outputs.findIndex(x => x === IOSynapses[k][1]);
 
-        var indx = (1 + window.ISynapses[i]) * neuronWidth / (window.ITSynapses[i] + 1) - neuronWidth / 2;
+        var indx = (1 + window.ISynapses[i]) * neuronWidth / (window.ITSynapses[i] + 1)/2 - neuronWidth / 2;
         window.ISynapses[i] = window.ISynapses[i] + 1;
 
-        var outdx = (1 + window.OSynapses[j]) * neuronWidth / (window.OTSynapses[j] + 1) - neuronWidth / 2;
+        var outdx = (1 + window.OSynapses[j]) * neuronWidth / (window.OTSynapses[j] + 1)/2 - neuronWidth / 2;
         window.OSynapses[j] = window.OSynapses[j] + 1;
 
         var pathData = [];
