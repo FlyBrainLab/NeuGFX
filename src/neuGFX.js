@@ -146,6 +146,10 @@ class NeuGFX {
           window._neuGFX.mods.FlyBrainLab.loadSubmodule(event.data.data);
           break;
         }
+        case 'renewCircuit': {
+          window.renewCircuit();
+          break;
+        }
         case 'getExperimentConfig': {
           window._neuGFX.sendAlert("Loading experiment settings...");
           var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
@@ -153,8 +157,14 @@ class NeuGFX {
           break;
         }
         case 'setExperimentConfig': {
-          window._neuGFX.sendAlert("Loading experiment settings...");
+          window._neuGFX.sendAlert("Setting experiment settings...");
           window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
+          try { 
+            window.renewCircuit();
+          } 
+          catch(err) { 
+
+          };
           break;
         }
         case 'updateActiveNeuropils': {

@@ -16,6 +16,12 @@ svgObj.selectAll("*").each(function (d, i) {
     this.setAttribute("hovered", "false");
 });
 
+
+window.sendExperimentConfig = function() {
+    var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
+}
+
 window.updateCircuit = function () {
     window.fbl.experimentConfig['cx'].disabled = [];
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
@@ -23,7 +29,9 @@ window.updateCircuit = function () {
             window.fbl.experimentConfig['cx'].disabled.push(d3.select(this).attr("label"));
         }
     });
+    window.sendExperimentConfig();
 };
+
 
 window.IOName = 'cx';
 window.renewCircuit = function () {
@@ -72,6 +80,7 @@ svgObj.selectAll(".region,.neuron").each(function (d, i) {
 });
 
 svgObj.selectAll("*").on("mouseout", function (d, i) {
+    $('.fbl-info-container').hide();
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         d3.select(this).attr("hovered", "false");
         d3.select(this).style("opacity", "0.6");
@@ -87,6 +96,12 @@ svgObj.selectAll("*").on("mouseout", function (d, i) {
 
 svgObj.selectAll("*").on("mouseover", function (d, i) {
     if (this.getAttribute("label") != null) {
+        $('.fbl-info-container').show();
+        document.getElementsByClassName("fbl-info-name")[0].innerHTML = this.getAttribute("label");
+        document.getElementsByClassName("fbl-info-desc")[0].innerHTML = "";
+        if (this.getAttribute("label") in window.fbl.experimentConfig['cx']) {
+            document.getElementsByClassName("fbl-info-desc")[0].innerHTML = JSON.stringify(window.fbl.experimentConfig['cx'][this.getAttribute("label")]);
+        }
         var querylabel = this.getAttribute("label");
         svgObj.selectAll(".region,.neuron").each(function (d, i) {
             d3.select(this).attr("hovered", "false");
@@ -95,7 +110,7 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
                 d3.select(this).style("opacity", "0.15");
             }
             else if (this.getAttribute("selected") == "true") {
-                d3.select(this).style("opacity", "0.6");
+                d3.select(this).style("opacity", "0.3");
             }
             d3.select('.svg-pan-zoom_viewport').style("opacity", "1");
         });
@@ -166,7 +181,6 @@ window.activateElement = function(_this, sendNLP) {
 }
 
 window.deactivateAll = function() {
-    
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         window.deactivateElement(this, false);
     });

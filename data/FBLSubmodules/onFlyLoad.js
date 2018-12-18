@@ -7,6 +7,11 @@ _NKModels = {
                 states: { V: -10., spike_state: 0., n: 0., m: 0., h: 1. },
                 params: { g_K: 100., g_Na: 10., g_l: 1. }
             },
+        LeakyIAF:
+            {
+                states: { V: -60., spike_state: 0.},
+                params: { reset_potential: -70., capacitance: 0.5, resting_potential: 0., resistance: 250.0 }
+            },
         ConnorStevens:
             {
                 states: { V: -10., Vprev: 0., Vprev2: 0., spike_state: 0., n: 0., m: 0., h: 1., a: 0., b: 0. },
