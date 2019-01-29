@@ -24,6 +24,7 @@ window.sendExperimentConfig = function() {
 
 window.updateCircuit = function () {
     window.fbl.experimentConfig['cx'].disabled = [];
+    
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         if (this.getAttribute("selected") == "false") {
             window.fbl.experimentConfig['cx'].disabled.push(d3.select(this).attr("label"));
@@ -34,6 +35,7 @@ window.updateCircuit = function () {
 
 
 window.IOName = 'cx';
+window.fbl.experimentConfig['cx'].updated = [];
 window.renewCircuit = function () {
     if (IOName in window.fbl.experimentConfig) {
         if ('disabled' in window.fbl.experimentConfig[IOName]) {
@@ -48,6 +50,22 @@ window.renewCircuit = function () {
                             d3.select(this).attr("selected", "false");
                         // };
                     }
+                    else
+                    {
+                        d3.select(this).attr("selected", "true");
+                    }
+
+                    d3.select(this).attr("hovered", "false");
+                    d3.select(this).style("opacity", "0.6");
+                    if (this.getAttribute("selected") == "false") {
+                        d3.select(this).style("opacity", "0.15");
+                    }
+                    else if (this.getAttribute("selected") == "true") {
+                        d3.select(this).style("opacity", "0.6");
+                    }
+                    var children = d3.selectAll(this.childNodes);
+                    try { children.style("opacity", "0.6"); } catch { };
+                    try { children.attr("hovered", "false"); } catch { };
                 });
             }
         }

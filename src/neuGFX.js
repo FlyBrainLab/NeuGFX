@@ -159,12 +159,14 @@ class NeuGFX {
         case 'setExperimentConfig': {
           window._neuGFX.sendAlert("Setting experiment settings...");
           window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
-          try { 
-            window.renewCircuit();
-          } 
-          catch(err) { 
+          setTimeout(function() {
+            try { 
+              window.renewCircuit();
+            } 
+            catch(err) { 
 
-          };
+            };
+          }, 300);
           break;
         }
         case 'updateActiveNeuropils': {
@@ -295,11 +297,24 @@ class NeuGFX {
         preventMouseEventsDefault: false
       });
       window.addEventListener("resize", function () {
+        try {
         console.log('Resized the SVG...');
         panZoomSVG.resize(); 
         panZoomSVG.updateBBox(); 
         panZoomSVG.fit();
         panZoomSVG.center();
+        }
+        catch(err) {
+          setTimeout(function() {
+            /*
+            console.log('Resized the SVG...');
+            panZoomSVG.resize(); 
+            panZoomSVG.updateBBox(); 
+            panZoomSVG.fit();
+            panZoomSVG.center();*/
+            window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
+          }, 100);
+        }
       });
       callback();
     });

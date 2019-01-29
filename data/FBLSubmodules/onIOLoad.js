@@ -141,27 +141,38 @@ generatePinMap(IOData, IOSynapses, IOName);
 svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
-window.fbl.circuitName = IOName;
+window.fbl.circuitName = 'cx';
+window.parentNeuropil = 'cx';
+$('.fbl-info-container').hide();
 
 window.updateCircuit = function () {
-    window.fbl.experimentConfig[IOName].disabled = [];
+    // window.fbl.experimentConfig[IOName].disabled = [];
     svgObj.selectAll(".neuron_class,.synapse_class").each(function (d, i) {
         if (this.getAttribute("inactive") == "true") {
-            window.fbl.experimentConfig[IOName].disabled.push(d3.select(this).attr("label"));
+            var index = window.fbl.experimentConfig[parentNeuropil].disabled.indexOf(d3.select(this).attr("label"));
+            if (index == -1) {
+                window.fbl.experimentConfig[parentNeuropil].disabled.push(d3.select(this).attr("label"));
+            }
+        }
+        if (this.getAttribute("inactive") == "false") {
+            var index = window.fbl.experimentConfig[parentNeuropil].disabled.indexOf(d3.select(this).attr("label"));
+            if (index > -1) {
+                window.fbl.experimentConfig[parentNeuropil].disabled.splice(index, 1);
+            }
         }
     });
 };
 
 window.renewCircuit = function () {
-    if (IOName in window.fbl.experimentConfig) {
-        if ('disabled' in window.fbl.experimentConfig[IOName]) {
-            console.log('Found config: ', window.fbl.experimentConfig[IOName].disabled)
-            var arrayLength = window.fbl.experimentConfig[IOName].disabled.length;
+    if (parentNeuropil in window.fbl.experimentConfig) {
+        if ('disabled' in window.fbl.experimentConfig[parentNeuropil]) {
+            console.log('Found config: ', window.fbl.experimentConfig[parentNeuropil].disabled)
+            var arrayLength = window.fbl.experimentConfig[parentNeuropil].disabled.length;
             for (var i = 0; i < arrayLength; i++) {
                 $(neuron_selector).each(function (index, value) {
                     //console.log(d3.select(this).attr("label"));
                     //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
-                    if (d3.select(this).attr("label") == window.fbl.experimentConfig[IOName].disabled[i]) {
+                    if (d3.select(this).attr("label") == window.fbl.experimentConfig[parentNeuropil].disabled[i]) {
                         if ($(this).is('svg g.synapse_class,.synapse_class')) {
                             //console.log('Switched ' + this);
                             //console.log(this);
@@ -250,16 +261,25 @@ window.getModelData = function (callback) {
         modelData = {};
         $(".modelInput").each(function (index, value) {
             //console.log(this);
-            if (!($(this).attr('entryType') in modelData))
-                modelData[$(this).attr('entryType')] = {};
-            modelData[$(this).attr('entryType')][$(this).attr('name')] = this.value;
+            // if (!($(this).attr('entrytype') in modelData))
+                // simModels[simID][$(this).attr('entrytype')] = {};
+                // modelData[$(this).attr('entrytype')] = {};
+            simModels[simID][$(this).attr('entrytype')][$(this).attr('name')] = this.value;
+            var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
+            window.fbl.experimentConfig[window.fbl.circuitName][configName] = simModel;
         });
         modelData['name'] = $('#modelSelect')[0].value;
         $('.container-fullwidth').removeClass("is-blurred");
+        
+        window.sendExperimentConfig();
         callback();
     }
 }
-
+/*
+if (!(modelData['name'] in window.fbl.experimentConfig['cx'].updated)) {
+    window.fbl.experimentConfig['cx'].updated.push(modelData['name']);
+}
+*/
 window.createOverlay = function (simID, simModel) {
     var overlay = document.createElement("div");
     overlay.classList.add("NeuGFX-overlay");
@@ -308,6 +328,7 @@ window.createOverlay = function (simID, simModel) {
                 }
             }
         }
+        window.sendExperimentConfig();
     })
     // Create the headers for the overlay
     h4 = document.createElement("h4");
@@ -360,6 +381,10 @@ window.createOverlay = function (simID, simModel) {
     $(document).on('click', function (event) {
         getModelData(function () { $('.NeuGFX-overlay').remove(); });
     });
+    var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
+    if (!(configName in window.fbl.experimentConfig['cx'].updated)) {
+        window.fbl.experimentConfig['cx'].updated.push(configName);
+    }
 }
 
 $(neuron_selector).on("click contextmenu", function (e) {
