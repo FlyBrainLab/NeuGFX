@@ -71,6 +71,10 @@ window.renewCircuit = function () {
                 });
             }
         }
+        else
+        {
+            setTimeout(function(){ reloadNeurons3D(); }, 1000);
+        }
     }
     window.updateCircuit();
 };
@@ -275,54 +279,74 @@ window.addAll = function (label, type) {
     });
 };
 
+
 svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
     //svgObj.selectAll(".region,.neuron").each(function (d, i) {
     //d3.select(this).style("opacity", "0.3");
-    if (this.getAttribute("hovered") == "true") {
-        if (this.getAttribute("selected") == "false") {
-            console.log('Activating ' + this);
-            var _this = this;
-            d3.select(_this).attr("selected", "true");
-            d3.select(_this).style("opacity", "1");
-            var children = d3.selectAll(_this.childNodes);
-            try { children.style("opacity", "1"); } catch { };
-            try { children.attr("selected", "true"); } catch { };
-            var toggleLabels = {};
-            toggleLabels[this.getAttribute("label")] = true;
-            if (this.getAttribute("label") != null) {
-                var label = this.getAttribute("label");
-                var labels = label.split("|");
-                labels.forEach(function (d) {
-                    toggleLabels[d] = true;
-                });
-            }
-            toggleByDiagramName(toggleLabels, "true");
-        }
-        else {
-            //console.log('Deactivating ' + this);
-            var _this = this;
-            d3.select(_this).attr("selected", "false");
-            d3.select(_this).style("opacity", "0.4");
-            var children = d3.selectAll(_this.childNodes);
-            //try {children.style("opacity", "1");} catch {};
-            try { children.attr("selected", "false"); } catch { };
-            if (d3.select(_this).attr("selected") == "false") {
-                try { children.style("opacity", "0.4"); } catch { };
-            }
-            var toggleLabels = {};
-            toggleLabels[this.getAttribute("label")] = true;
-            if (this.getAttribute("label") != null) {
-                var label = this.getAttribute("label");
-                var labels = label.split("|");
-                labels.forEach(function (d) {
-                    toggleLabels[d] = true;
-                });
-            }
-            toggleByDiagramName(toggleLabels, "false");
-        }
+    var _this = this;
+    var $this = $(this);
+    if ($(_this).hasClass('clicked')) {
+        $(_this).removeClass('clicked');
+        // console.log(_this);
     }
-    //});
-    window.updateCircuit();
+    else {
+        $(_this).addClass('clicked');
+        // console.log(_this);
+        setTimeout(function () {
+            // console.log($this);
+            var _this = $this[0];
+            // console.log(_this);
+            if ($(_this).hasClass('clicked')) {
+                // console.log("Executing...");
+                if (_this.getAttribute("hovered") == "true") {
+                    if (_this.getAttribute("selected") == "false") {
+                        console.log('Activating ' + _this);
+
+                        d3.select(_this).attr("selected", "true");
+                        d3.select(_this).style("opacity", "1");
+                        var children = d3.selectAll(_this.childNodes);
+                        try { children.style("opacity", "1"); } catch { };
+                        try { children.attr("selected", "true"); } catch { };
+                        var toggleLabels = {};
+                        toggleLabels[_this.getAttribute("label")] = true;
+                        if (this.getAttribute("label") != null) {
+                            var label = _this.getAttribute("label");
+                            var labels = label.split("|");
+                            labels.forEach(function (d) {
+                                toggleLabels[d] = true;
+                            });
+                        }
+                        toggleByDiagramName(toggleLabels, "true");
+                    }
+                    else {
+                        //console.log('Deactivating ' + this);
+                        // var _this = this;
+                        d3.select(_this).attr("selected", "false");
+                        d3.select(_this).style("opacity", "0.4");
+                        var children = d3.selectAll(_this.childNodes);
+                        //try {children.style("opacity", "1");} catch {};
+                        try { children.attr("selected", "false"); } catch { };
+                        if (d3.select(_this).attr("selected") == "false") {
+                            try { children.style("opacity", "0.4"); } catch { };
+                        }
+                        var toggleLabels = {};
+                        toggleLabels[_this.getAttribute("label")] = true;
+                        if (_this.getAttribute("label") != null) {
+                            var label = _this.getAttribute("label");
+                            var labels = label.split("|");
+                            labels.forEach(function (d) {
+                                toggleLabels[d] = true;
+                            });
+                        }
+                        toggleByDiagramName(toggleLabels, "false");
+                    }
+                }
+                //});
+                window.updateCircuit();
+                $(_this).removeClass('clicked'); 
+            }
+        }, 150);
+    }
 });
 
 function toggleByLabel(a) {
@@ -447,11 +471,15 @@ var regions = svgObj.selectAll(".region")
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex", function () { window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); });
 // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "centralcomplex_diagram_v2" });
 
+window.reloadNeurons3D = function() {
+    uname = '"' + window.bioMatches[1].join('","') + '"';
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname:  uname});
+}
+
 $.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", function (data) {
     window.bioMatches = data;
     window.bioWorkspace = [];
-    uname = '"' + window.bioMatches[1].join('","') + '"';
-    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname:  uname});
+    
     for (var i = 0; i < bioMatches[1].length; i++) {
         window.bioWorkspace[bioMatches[1][i]] = true;
     }
