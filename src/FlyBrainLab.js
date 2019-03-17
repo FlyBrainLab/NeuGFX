@@ -50,7 +50,7 @@ export class FlyBrainLab {
 
     loadFBLSVG(url, callback = null) {
         if (this.circuitName != url) {
-            this.gfx.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/' + url + '.svg', callback);
+            this.gfx.loadSVG(this.CircuitOptions.database + url + '.svg', callback);
             this.circuitName = url;
             this.addCircuit(url);
         }
@@ -66,7 +66,15 @@ export class FlyBrainLab {
 
     loadCircuit(url, callback = null) {
         if (this.circuitName != url) {
-            this.gfx.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/' + url + '.svg', callback);
+            this.gfx.loadSVG(this.CircuitOptions.database + url + '.svg', callback);
+            this.circuitName = url;
+            this.addCircuit(url);
+        }
+    }
+
+    loadCircuitAsData(url, callback = null) {
+        if (this.circuitName != url) {
+            this.gfx.loadSVGAsData(url, callback);
             this.circuitName = url;
             this.addCircuit(url);
         }

@@ -141,7 +141,7 @@ generatePinMap(IOData, IOSynapses, IOName);
 svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
-window.fbl.circuitName = 'cx';
+// window.fbl.circuitName = 'cx';
 window.parentNeuropil = 'cx';
 $('.fbl-info-container').hide();
 
@@ -172,6 +172,7 @@ window.renewCircuit = function () {
                 $(neuron_selector).each(function (index, value) {
                     //console.log(d3.select(this).attr("label"));
                     //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
+                    // console.log(window.fbl.experimentConfig[parentNeuropil].disabled[i]);
                     if (d3.select(this).attr("label") == window.fbl.experimentConfig[parentNeuropil].disabled[i]) {
                         if ($(this).is('svg g.synapse_class,.synapse_class')) {
                             //console.log('Switched ' + this);

@@ -10,35 +10,49 @@ function modelUpdate(NLPInput) {
     console.log('modelUpdate Input:', NLPInput);
     if (NLPInput.command == "show") {
         neuList.forEach(function (element) {
-            element = element.replace('a','alpha');
-            var neu = svgObj.select("#" + element);
-            if (neu.attr("visible") == "true") {
-                toggleByID(element, false);
-            };
+            try {
+                element = element.replace('a', 'alpha');
+                var neu = svgObj.select("#" + element);
+                if (neu.attr("visible") == "true") {
+                    toggleByID(element, false);
+                };
+            }
+            catch (err) { };
         });
         NLPInput.elements.forEach(function (element) {
-            element = element.replace('a','alpha');
+            element = element.replace('a', 'alpha');
             toggleByID(element, false);
         });
     }
     if (NLPInput.command == "remove") {
         NLPInput.elements.forEach(function (element) {
-            element = element.replace('a','alpha');
-            var neu = svgObj.select("#" + element);
-            if (neu.attr("visible") == "true") {
-                toggleByID(element, false);
-            };
+            try {
+                element = element.replace('a', 'alpha');
+                var neu = svgObj.select("#" + element);
+                if (neu.attr("visible") == "true") {
+                    toggleByID(element, false);
+                };
+            }
+            catch (err) { };
         });
     }
     if (NLPInput.command == "add") {
         NLPInput.elements.forEach(function (element) {
-            element = element.replace('a','alpha');
-            var neu = svgObj.select("#" + element);
-            if (neu.attr("visible") != "true") {
-                toggleByID(element, false);
-            };
+            try {
+                element = element.replace('a', 'alpha');
+                var neu = svgObj.select("#" + element);
+                if (neu.attr("visible") != "true") {
+                    toggleByID(element, false);
+                };
+            }
+            catch (err) { };
         });
     }
+}
+
+window.sendExperimentConfig = function() {
+    var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
 }
 
 window.updateCircuit = function () {
@@ -46,12 +60,13 @@ window.updateCircuit = function () {
     window.fbl.experimentConfig[lpu_name] = {};
     window.fbl.experimentConfig[lpu_name].disabled = [];
     neuList.forEach(function (element) {
-        element = element.replace('a','alpha');
+        // element = element.replace('a','alpha');
         var neu = svgObj.select("#" + element);
         if (neu.attr("visible") == "false") {
             window.fbl.experimentConfig[lpu_name].disabled.push(element);
         };
     });
+    window.sendExperimentConfig();
 };
 
 /*
