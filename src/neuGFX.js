@@ -2,6 +2,9 @@ import { debug } from 'util';
 
 // Important Package Imports
 
+// Bootstrap
+import('bootstrap');
+
 // Sigma and its Plugins
 import Sigma from 'sigma';
 import('sigma/build/plugins/sigma.layout.forceAtlas2.min');
