@@ -77,14 +77,15 @@ generatePinMap = function (IOData, IOSynapses, IOName) {
         pathData.push({ x: neuronInX(i) + indx, y: yBreak });
         pathData.push({ x: neuronOutX(j) + outdx, y: yBreak });
         pathData.push({ x: neuronOutX(j) + outdx, y: neuronOutY(j) - neuronHeight / 2 });
+        // .attr("label", IOData.inputs[i] + " to " + IOData.outputs[j])
         var lineGraph = svgObj.append("path")
             .attr("d", lineGenerator(pathData))
             .attr("stroke", "rgb(52,67,73)")
             .attr("stroke-width", 2)
-            .attr("label", IOData.inputs[i] + " to " + IOData.outputs[j])
+            .attr("label", IOData.inputs[i] + "->" + IOData.outputs[j] + "_in_" + window.IOName)
             .attr("class", "synapse_class")
             .attr("selected", "true")
-            .attr("tooltip-data", IOData.inputs[i] + " to " + IOData.outputs[j] + " :: " + "This is a synapse.")
+            .attr("tooltip-data", IOData.inputs[i] + " to " + IOData.outputs[j] + " in " + window.IOName + " :: " + "This is a synapse.")
             .attr("fill", "none");
     }
 
