@@ -161,20 +161,24 @@ var modelDescriptionMap = {
 
 var modelId = '1';
 
-// window.getModelData = function (callback) {
-//     if ($('.NeuGFX-overlay').length) {
-//         modelData = {};
-//         $(".modelInput").each(function (index, value) {
-//             //console.log(this);
-//             if (!($(this).attr('entryType') in modelData))
-//                 modelData[$(this).attr('entryType')] = {};
-//             modelData[$(this).attr('entryType')][$(this).attr('name')] = this.value;
-//         });
-//         modelData['name'] = $('#modelSelect')[0].value;
-//         $('.container-fullwidth').removeClass("is-blurred");
-//         callback();
-//     }
-// }
+window.getModelData = function (callback) {
+    if ($('.NeuGFX-overlay').length) {
+        modelData = {};
+        console.log("1: modelData");
+        console.log(modelData);
+        $(".modelInput").each(function (index, value) {
+            //console.log(this);
+            if (!($(this).attr('entryType') in modelData))
+                modelData[$(this).attr('entryType')] = {};
+            modelData[$(this).attr('entryType')][$(this).attr('name')] = this.value;
+        });
+        modelData['name'] = modelDescriptionMap[modelId]['id'];
+        console.log("2: modelData");
+        console.log(modelData);
+        $('.container-fullwidth').removeClass("is-blurred");
+        callback();
+    }
+}
 
 window.createOverlay = function(modelId) {
     var overlay = document.createElement("div");
@@ -343,7 +347,7 @@ function getStatesTable(modelId) {
         input.classList.add("form-control");
         input.classList.add("modelInput");
         input.setAttribute("name", key);
-        input.setAttribute("entryType", "state");
+        input.setAttribute("entryType", "states");
         input.id = key;
         input.placeholder = value;
         input.setAttribute("type", "text");
@@ -428,7 +432,7 @@ makeModelsInteractive = function(e) {
         console.log("One of the models clicked!");
         modelId = event.target.id;
         //getModelData(function () { $('.NeuGFX-overlay').remove(); });
-        //e.preventDefault();
+        //event.preventDefault();
         createOverlay(modelId);
         makeModelsInteractive();
     });
