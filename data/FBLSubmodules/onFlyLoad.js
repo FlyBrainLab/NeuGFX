@@ -341,6 +341,9 @@ function getStatesTable(modelId) {
         inputDiv.classList.add("inputDiv");
         var input = document.createElement('input');
         input.classList.add("form-control");
+        input.classList.add("modelInput");
+        input.setAttribute("name", key);
+        input.setAttribute("entryType", "state");
         input.id = key;
         input.placeholder = value;
         input.setAttribute("type", "text");
@@ -390,6 +393,10 @@ function getParamsTable(modelId) {
         inputDiv.classList.add("inputDiv");
         var input = document.createElement('input');
         input.classList.add("form-control");
+
+        input.classList.add("modelInput");
+        input.setAttribute("name", key);
+        input.setAttribute("entryType", "params");
         input.id = key;
         input.placeholder = value;
         input.setAttribute("type", "text");
