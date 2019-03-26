@@ -17,14 +17,34 @@ svgObj.selectAll("*").each(function (d, i) {
 });
 
 
-window.sendExperimentConfig = function() {
+window.sendExperimentConfig = function () {
     var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
     window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
 }
 
+window.IOName = 'cx';
+window.fbl.experimentConfig['cx'].updated = [];
+
 window.updateCircuit = function () {
-    window.fbl.experimentConfig['cx'].disabled = [];
-    
+    if (IOName in window.fbl.experimentConfig) {
+        if ('disabled' in window.fbl.experimentConfig[IOName]) {
+            let disabled_temp = Array.from(window.fbl.experimentConfig['cx'].disabled);
+            window.fbl.experimentConfig['cx'].disabled = [];
+            var arrayLength = disabled_temp.length;
+            for (var i = 0; i < arrayLength; i++) {
+                if (disabled_temp[i].includes('->')) {
+                    window.fbl.experimentConfig['cx'].disabled.push(disabled_temp[i]);
+                }
+            }
+        }
+        else {
+            window.fbl.experimentConfig['cx'].disabled = [];
+        }
+    }
+    else {
+        window.fbl.experimentConfig['cx'].disabled = [];
+    }
+
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         if (this.getAttribute("selected") == "false") {
             window.fbl.experimentConfig['cx'].disabled.push(d3.select(this).attr("label"));
@@ -34,8 +54,8 @@ window.updateCircuit = function () {
 };
 
 
-window.IOName = 'cx';
-window.fbl.experimentConfig['cx'].updated = [];
+
+
 window.renewCircuit = function () {
     if (IOName in window.fbl.experimentConfig) {
         if ('disabled' in window.fbl.experimentConfig[IOName]) {
@@ -47,7 +67,7 @@ window.renewCircuit = function () {
                     //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
                     if (d3.select(this).attr("label") == window.fbl.experimentConfig[IOName].disabled[i]) {
                         // if ($(this).is('.region,.neuron')) {
-                            d3.select(this).attr("selected", "false");
+                        d3.select(this).attr("selected", "false");
                         // };
                     }
                     /*
@@ -71,9 +91,8 @@ window.renewCircuit = function () {
                 });
             }
         }
-        else
-        {
-            setTimeout(function(){ reloadNeurons3D(); }, 1000);
+        else {
+            setTimeout(function () { reloadNeurons3D(); }, 1000);
         }
     }
     window.updateCircuit();
@@ -185,7 +204,7 @@ svgObj.selectAll(".neuron path").style("fill", "none");
 
 svgObj.selectAll("text").style("pointer-events", "none");
 
-window.activateElement = function(_this, sendNLP) {
+window.activateElement = function (_this, sendNLP) {
     d3.select(_this).attr("selected", "true");
     d3.select(_this).style("opacity", "1");
     var children = d3.selectAll(_this.childNodes);
@@ -201,16 +220,16 @@ window.activateElement = function(_this, sendNLP) {
         });
     }
     if (sendNLP == true)
-    toggleByDiagramName(toggleLabels, "true");
+        toggleByDiagramName(toggleLabels, "true");
 }
 
-window.deactivateAll = function() {
+window.deactivateAll = function () {
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         window.deactivateElement(this, false);
     });
 }
 
-window.deactivateElement = function(_this, sendNLP) {
+window.deactivateElement = function (_this, sendNLP) {
     console.log(d3.select(_this));
     d3.select(_this).attr("selected", "false");
     d3.select(_this).style("opacity", "0.4");
@@ -230,7 +249,7 @@ window.deactivateElement = function(_this, sendNLP) {
         });
     }
     if (sendNLP == true)
-    toggleByDiagramName(toggleLabels, "false");
+        toggleByDiagramName(toggleLabels, "false");
 }
 
 window.toggleByID = function (label, type) {
@@ -246,15 +265,15 @@ window.toggleByID = function (label, type) {
         var label_this = (label_pre == null ? '' : label_pre) + ' ' + (label_pos == null ? '' : label_pos) + ' ' + (label_label == null ? '' : label_label);
         // console.log(label_this);
         // if (typeof label_this === 'string' || label_this instanceof String) {
-            if (label_this.includes(label)) {
-                // console.log('Found match!');
-                // console.log(label_this);
-                // console.log(label);
-                if (type == true)
-                    activateElement(this, false);
-                if (type == false)
-                    deactivateElement(this, false);
-            }
+        if (label_this.includes(label)) {
+            // console.log('Found match!');
+            // console.log(label_this);
+            // console.log(label);
+            if (type == true)
+                activateElement(this, false);
+            if (type == false)
+                deactivateElement(this, false);
+        }
         // }
     });
 };
@@ -309,7 +328,7 @@ svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
                         try { children.attr("selected", "true"); } catch { };
                         var toggleLabels = {};
                         toggleLabels[_this.getAttribute("label")] = true;
-                        if (this.getAttribute("label") != null) {
+                        if (_this.getAttribute("label") != null) {
                             var label = _this.getAttribute("label");
                             var labels = label.split("|");
                             labels.forEach(function (d) {
@@ -343,7 +362,7 @@ svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
                 }
                 //});
                 window.updateCircuit();
-                $(_this).removeClass('clicked'); 
+                $(_this).removeClass('clicked');
             }
         }, 150);
     }
@@ -435,7 +454,7 @@ var regions = svgObj.selectAll(".region")
             if (pre_region != null) {
                 if (pre_region.indexOf(label_this) != -1) {
                     var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
-                    if (neuron_id_index> -1)
+                    if (neuron_id_index > -1)
                         pre_id_list.push(window.bioMatches[0][neuron_id_index]);
                 }
             }
@@ -444,7 +463,7 @@ var regions = svgObj.selectAll(".region")
             if (post_region != null) {
                 if (post_region.indexOf(label_this) != -1) {
                     var neuron_id_index = window.bioMatches[0].indexOf(id_neuron);
-                    if (neuron_id_index> -1)
+                    if (neuron_id_index > -1)
                         post_id_list.push(window.bioMatches[0][neuron_id_index]);
                 }
             }
@@ -471,15 +490,15 @@ var regions = svgObj.selectAll(".region")
 window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex", function () { window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); });
 // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "centralcomplex_diagram_v2" });
 
-window.reloadNeurons3D = function() {
+window.reloadNeurons3D = function () {
     uname = '"' + window.bioMatches[1].join('","') + '"';
-    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname:  uname});
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
 }
 
 $.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", function (data) {
     window.bioMatches = data;
     window.bioWorkspace = [];
-    
+
     for (var i = 0; i < bioMatches[1].length; i++) {
         window.bioWorkspace[bioMatches[1][i]] = true;
     }
@@ -488,18 +507,15 @@ $.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", f
 
 
 toggleWorkspaceByUname = function (uname, type) {
-    if (type == "true")
-    {
+    if (type == "true") {
         uname = '"' + uname.join('","') + '"';
         window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
     }
-    else if (type == "false")
-    {
+    else if (type == "false") {
         uname = '"' + uname.join('","') + '"';
         window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: uname });
     }
-    else
-    {
+    else {
         var pos_unames = [];
         var neg_unames = [];
         for (var i = 0; i < uname.length; i++) {
@@ -507,22 +523,21 @@ toggleWorkspaceByUname = function (uname, type) {
                 pos_unames.push(uname[i]);
                 window.bioWorkspace[uname[i]] = false;
             }
-            else
-            {
+            else {
                 neg_unames.push(uname[i]);
                 window.bioWorkspace[uname[i]] = true;
             }
         }
         uname = '"' + pos_unames.join('","') + '"';
         if (pos_unames.length > 0)
-        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: uname });
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: uname });
 
         uname = '"' + neg_unames.join('","') + '"';
-    
+
         if (neg_unames.length > 0)
-        window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
-    
-}
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
+
+    }
 }
 
 toggleByDiagramName = function (diagramNames, type) {

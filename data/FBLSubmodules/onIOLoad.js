@@ -246,7 +246,7 @@ $(neuron_selector).each(function (index, value) {
 window.reloadModels = function () {
     for (var key in window.fbl.experimentConfig[window.fbl.circuitName]) {
         $(neuron_selector).each(function (index, value) {
-            var configName = $(value).attr('tooltip-data').split(" :: ")[0];
+            var configName = $(value).attr('label');
             if (key == configName) {
                 console.log('Found previous setting for and updated ' + configName + '.');
                 window.simModels[$(value).attr('simID')] = window.fbl.experimentConfig[window.fbl.circuitName][key];
