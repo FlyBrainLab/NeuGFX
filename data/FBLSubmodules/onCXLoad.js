@@ -60,36 +60,36 @@ window.renewCircuit = function () {
     if (IOName in window.fbl.experimentConfig) {
         if ('disabled' in window.fbl.experimentConfig[IOName]) {
             console.log('Found config: ', window.fbl.experimentConfig[IOName].disabled)
-            var arrayLength = window.fbl.experimentConfig[IOName].disabled.length;
-            for (var i = 0; i < arrayLength; i++) {
-                $(".region,.neuron").each(function (index, value) {
-                    //console.log(d3.select(this).attr("label"));
-                    //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
-                    if (d3.select(this).attr("label") == window.fbl.experimentConfig[IOName].disabled[i]) {
-                        // if ($(this).is('.region,.neuron')) {
-                        d3.select(this).attr("selected", "false");
-                        // };
-                    }
-                    /*
-                    else
-                    {
-                        d3.select(this).attr("selected", "true");
-                    }
-                    */
+            // var arrayLength = window.fbl.experimentConfig[IOName].disabled.length;
+            // for (var i = 0; i < arrayLength; i++) {
+            $(".region,.neuron").each(function (index, value) {
+                //console.log(d3.select(this).attr("label"));
+                //console.log(window.fbl.experimentConfig[IOName].disabled[i]);
+                if (window.fbl.experimentConfig[IOName].disabled.includes(d3.select(this).attr("label"))) {
+                    // if ($(this).is('.region,.neuron')) {
+                    d3.select(this).attr("selected", "false");
+                    // };
+                }
+                /*
+                else
+                {
+                    d3.select(this).attr("selected", "true");
+                }
+                */
 
-                    d3.select(this).attr("hovered", "false");
+                d3.select(this).attr("hovered", "false");
+                d3.select(this).style("opacity", "0.6");
+                if (this.getAttribute("selected") == "false") {
+                    d3.select(this).style("opacity", "0.15");
+                }
+                else if (this.getAttribute("selected") == "true") {
                     d3.select(this).style("opacity", "0.6");
-                    if (this.getAttribute("selected") == "false") {
-                        d3.select(this).style("opacity", "0.15");
-                    }
-                    else if (this.getAttribute("selected") == "true") {
-                        d3.select(this).style("opacity", "0.6");
-                    }
-                    var children = d3.selectAll(this.childNodes);
-                    try { children.style("opacity", "0.6"); } catch { };
-                    try { children.attr("hovered", "false"); } catch { };
-                });
-            }
+                }
+                var children = d3.selectAll(this.childNodes);
+                try { children.style("opacity", "0.6"); } catch { };
+                try { children.attr("hovered", "false"); } catch { };
+            });
+            // }
         }
         else {
             setTimeout(function () { reloadNeurons3D(); }, 1000);

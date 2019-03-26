@@ -34,7 +34,9 @@ wireAutomatically = function (IOData) {
 
     for (var i = 0; i < IOData.inputs.length; i++)
         for (var j = 0; j < IOData.outputs.length; j++) {
-            window.IOSynapses.push([IOData.inputs[i], IOData.outputs[j]]);
+            if (IOData.inputs[i] != IOData.outputs[j]) { // There are no autapses
+                window.IOSynapses.push([IOData.inputs[i], IOData.outputs[j]]);
+            }
         }
 }
 
