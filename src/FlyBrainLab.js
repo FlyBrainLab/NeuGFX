@@ -213,6 +213,14 @@ export class FlyBrainLab {
                 window.fbl.loadFBLSVG('mb', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
+            if (id === 'sdfp_r' || id === 'sdfp_l') {
+                window.fbl.loadSubmodule('data/FBLSubmodules/onMB2Load.js');
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
+            if (id === 'idfp_r' || id === 'idfp_l') {
+                window.fbl.loadFBLSVG('mb_general_circuit', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
+                //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
+            }
             if (id === 'lh_r' || id === 'lh_l') {
                 window.fbl.loadFBLSVG('lh', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onLHLoad.js'); console.log("Submodule loaded.") });
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');

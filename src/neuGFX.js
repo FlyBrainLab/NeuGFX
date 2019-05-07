@@ -163,6 +163,10 @@ class NeuGFX {
           break;
         }
         case 'setExperimentConfig': {
+          try { 
+          window.addAll();
+          }
+          catch(err) {};
           window._neuGFX.sendAlert("Setting experiment settings...");
           window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
           setTimeout(function() {
@@ -206,7 +210,7 @@ class NeuGFX {
           console.log("Received Data Type:");
           console.log(value.type);
           var active_neurons = [];
-          for (i in value)
+          for (var i in value)
           {
             active_neurons.push(value[i].name);
           }
