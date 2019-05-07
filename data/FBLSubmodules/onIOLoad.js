@@ -164,6 +164,7 @@ window.updateCircuit = function () {
             }
         }
     });
+    window.sendExperimentConfig();
 };
 
 window.renewCircuit = function () {
@@ -406,9 +407,33 @@ $(neuron_selector).on("click", function (e) {
     label = $(this).attr('label');
     console.log('Toggling element...');
     console.log(label);
+    window.fbl.experimentConfig['lastAction'] = 'toggled';
+    window.fbl.experimentConfig['lastLabel'] = label;
+    if ($(this).hasClass('neuron_class')) {
+        window.fbl.experimentConfig['lastObject'] = 'neuron';
+    }
+    if ($(this).hasClass('synapse_class')) {
+        window.fbl.experimentConfig['lastObject'] = 'synapse';
+    }
     toggleByDiagramName(label);
+    window.updateCircuit();
 });
 
+window.addAll = function (label, type) {
+    $(neuron_selector).each(function (index, value) {
+        if ($(this).attr('inactive')) {
+            $(this).removeAttr('inactive');
+            var presyn = $(this).attr('presyn');
+            var postsyn = $(this).attr('postsyn');
+            $("svg g.neuron_class").each(function () {
+                if ($(this).attr("name") == presyn)
+                    $(this).removeAttr('inactive');
+                if ($(this).attr("name") == postsyn)
+                    $(this).removeAttr('inactive');
+            });
+        }
+    });
+};
 
 window.renewCircuit();
 

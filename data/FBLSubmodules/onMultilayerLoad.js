@@ -61,11 +61,11 @@ wireAutomatically(IOData);
 
 generatePinMap = function (IOData, IOLayers, IOSynapses, IOName) {
     window._neuGFX.mods.FlyBrainLab.clearSVG();
-    var neuronWidth = 64;
+    var neuronWidth = 128;
     var neuronDX = 2;
     var neuronHeight = 32;
 
-    getNeuronX = function (i, j) { return (i + j * 1.5 + 1) * 96 + 25 }; // Row, Column
+    getNeuronX = function (i, j) { return (i + j * 1.5 + 1) * 160 + 25 }; // Row, Column
     getNeuronY = function (i, j) { return 125 + j * 200 };
 
     //getNeuronX = function (i) { return 96 + 48 + (i + 1) * 96 + 25 };

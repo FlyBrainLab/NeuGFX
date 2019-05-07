@@ -70,6 +70,10 @@ window.renewCircuit = function () {
                     d3.select(this).attr("selected", "false");
                     // };
                 }
+                else
+                {
+                    // d3.select(this).attr("selected", "true");
+                }
                 /*
                 else
                 {
@@ -168,7 +172,7 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
                     d3.select(this).style("opacity", "1");
                     d3.select(this).attr("hovered", "true");
                     if (d3.select(this).attr("selected") == "false")
-                        d3.select(this).style("opacity", "0.4");
+                        d3.select(this).style("opacity", "1");
                     //console.log(label);
                 }
                 var _this = this;
@@ -184,8 +188,8 @@ svgObj.selectAll("*").on("mouseover", function (d, i) {
                             try { children.style("opacity", "1"); } catch { };
                             try { children.attr("hovered", "true"); } catch { };
                             if (d3.select(_this).attr("selected") == "false") {
-                                d3.select(_this).style("opacity", "0.4");
-                                try { children.style("opacity", "0.4"); } catch { };
+                                d3.select(_this).style("opacity", "1");
+                                try { children.style("opacity", "1"); } catch { };
                             }
                             //console.log(_this);
                         }
@@ -320,6 +324,20 @@ svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
                 if (_this.getAttribute("hovered") == "true") {
                     if (_this.getAttribute("selected") == "false") {
                         console.log('Activating ' + _this);
+                        window.fbl.experimentConfig['lastAction'] = 'activated';
+                        if (_this.getAttribute("label") != null) {
+                            window.fbl.experimentConfig['lastLabel'] = _this.getAttribute("label");
+                        }
+                        else
+                        {
+                            window.fbl.experimentConfig['lastLabel'] = "Unknown";
+                        }
+                        if ($(_this).hasClass('region')) {
+                            window.fbl.experimentConfig['lastObject'] = 'region';
+                        }
+                        if ($(_this).hasClass('neuron')) {
+                            window.fbl.experimentConfig['lastObject'] = 'neuron';
+                        }
 
                         d3.select(_this).attr("selected", "true");
                         d3.select(_this).style("opacity", "1");
@@ -340,6 +358,20 @@ svgObj.selectAll(".region,.neuron").on("click", function (d, i) {
                     else {
                         //console.log('Deactivating ' + this);
                         // var _this = this;
+                        window.fbl.experimentConfig['lastAction'] = 'deactivated';
+                        if (_this.getAttribute("label") != null) {
+                            window.fbl.experimentConfig['lastLabel'] = _this.getAttribute("label");
+                        }
+                        else
+                        {
+                            window.fbl.experimentConfig['lastLabel'] = "Unknown";
+                        }
+                        if ($(_this).hasClass('region')) {
+                            window.fbl.experimentConfig['lastObject'] = 'region';
+                        }
+                        if ($(_this).hasClass('neuron')) {
+                            window.fbl.experimentConfig['lastObject'] = 'neuron';
+                        }
                         d3.select(_this).attr("selected", "false");
                         d3.select(_this).style("opacity", "0.4");
                         var children = d3.selectAll(_this.childNodes);

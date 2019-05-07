@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>NeuGFX Test Site</title>
+  <title>NeuGFX</title>
   <script src=" https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.min.js"></script>
   <script src="./lib/hexbin.js"></script>
@@ -16,6 +16,11 @@
 </head>
 
 <body>
+    <div class="fbl-info-container">
+        <h4 class="fbl-info-name">Region 1</h4>
+        <p class="fbl-info-desc">This is region 1.</p>
+      </div>
+
   <div class="container-fullwidth">
     <nav class="navbar navbar-expand-lg navbar-light bg-light d-none d-lg-block d-xl-non" id="fbl-gfx-navbar">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -44,14 +49,24 @@
             <a class="nav-link" href="#">Maximize</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" id="switch-toggle" href="#">Switch</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" id="plotter-toggle" href="#">Toggle Plotter</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="reset-button" href="#">Reset</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" id="remove-button" href="#">Remove All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="add-button" href="#">Add All</a>
+          </li>
         </ul>
       </div>
     </nav>
+
 
 
     <div class="fbl-gfx-container">
@@ -94,16 +109,20 @@
     window._neuGFX = neuGFX;
     window.fbl = neuGFX.getModule("FlyBrainLab");
     //window._neuGFX.mods.FlyBrainLab.loadFBLGEXF('FITest');
-    window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
+    window._neuGFX.mods.FlyBrainLab.loadSVG(window._neuGFX.mods.FlyBrainLab.CircuitOptions.database + 'fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
 
 
 
 
-
-
+    window.removeAll = function() {};
+    window.addAll = function() {};
+    $('#switch-toggle').click(function () { window.switchLPU(); console.log('Triggered...') });
+    $('#remove-button').click(function () { window.removeAll(); console.log('Triggered...') });
+    $('#add-button').click(function () { window.addAll(); console.log('Triggered...') });
     $('#plotter-toggle').click(function () { window.neuGFX.toggleScreen(); console.log('Triggered...') });
-    $('#reset-button').click(function () { window._neuGFX.mods.FlyBrainLab.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); }); console.log('Triggered...') });
+    $('#reset-button').click(function () { window._neuGFX.mods.FlyBrainLab.loadSVG(window._neuGFX.mods.FlyBrainLab.CircuitOptions.database + 'fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); }); console.log('Triggered...') });
     $("#info_div").hide();
+    $('.fbl-info-container').hide();
     //neuGFX.loadSVG('https://data.flybrainlab.fruitflybrain.org/data/fly.svg', function () { neuGFX.fbl.initializeFlyBrainSVG(); });
 
   </script>
