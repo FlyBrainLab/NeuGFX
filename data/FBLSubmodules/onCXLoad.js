@@ -269,7 +269,7 @@ window.toggleByID = function (label, type) {
         var label_this = (label_pre == null ? '' : label_pre) + ' ' + (label_pos == null ? '' : label_pos) + ' ' + (label_label == null ? '' : label_label);
         // console.log(label_this);
         // if (typeof label_this === 'string' || label_this instanceof String) {
-        if (label_this.includes(label)) {
+        if (label_this.includes(label)||label.includes(label_label)||label.includes((label_pre == null ? 'NAN' : label_pre))||label.includes((label_pos == null ? 'NAN' : label_pos))) {
             // console.log('Found match!');
             // console.log(label_this);
             // console.log(label);
@@ -462,8 +462,10 @@ function modelUpdate(NLPInput) {
         });
     }
     if (NLPInput.command == "add") {
+        window.deactivateAll();
         NLPInput.elements.forEach(function (element) {
             // element = element.replace('a','alpha');
+            // console.log(element);
             toggleByID(element, true);
         });
     }
