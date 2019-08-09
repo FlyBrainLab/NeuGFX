@@ -24,7 +24,14 @@ _NKModels = {
                 states: { V: -46.080, n: 0.3525 },
                 params: { V1: -20.0, V2: 50.0, V3: -40.0, V4: 20.0, phi: 0.001, offset: 0.0, V_L: -40.0, V_Ca: 120.0, V_K: -80.0, g_L: 3.0, g_Ca: 4.0, g_K: 15.0 }
             }
-    }
+    },
+    TransductionModels: {
+        FlyTransducer:
+            {
+                states: { x1: 0., x2: 0., x3: 0., I: 0.},
+                params: { b: 10., d: 5. }
+            }
+    },
 };
 
 var _NKModelFamilies = [];
