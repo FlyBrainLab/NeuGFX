@@ -13,6 +13,7 @@ export class FlyBrainLab {
         this.gfx = options['master'] || null;
         this.circuitName = "fly";
         this.experimentConfig = {};
+        this.circuitContent = {};
         this.linkPathConfig = [];
         this.CircuitOptions = {
             database: 'https://data.flybrainlab.fruitflybrain.org/data/',
@@ -79,6 +80,16 @@ export class FlyBrainLab {
             this.addCircuit(url);
         }
     }
+
+    loadCircuitFromString(url, callback = null) {
+        if (this.circuitName != url) {
+            this.gfx.loadSVGFromString(url['string'], callback);
+            this.circuitContent[url['name']] = url['string'];
+            this.circuitName = url['name'];
+            this.addCircuit(url['name']);
+        }
+    }
+
 
     sendAlert(type, string) {
         if (type == "log")
@@ -214,7 +225,8 @@ export class FlyBrainLab {
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
             if (id === 'sdfp_r' || id === 'sdfp_l') {
-                window.fbl.loadSubmodule('data/FBLSubmodules/onMB2Load.js');
+                window.fbl.loadFBLSVG('alpha_circuit', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onMBLoad.js'); console.log("Submodule loaded.") });
+                // window.fbl.loadSubmodule('data/FBLSubmodules/onMB2Load.js');
                 //window.fbl.sendMessage({ messageType: 'NLPquery', query: "show columns" }, '*');
             }
             if (id === 'idfp_r' || id === 'idfp_l') {

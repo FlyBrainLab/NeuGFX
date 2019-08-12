@@ -94,6 +94,7 @@ class NeuGFX {
     window.modelUpdate = function (NLPInput) {
       console.log('modelUpdate called, but no modelUpdate was defined.');
     }
+    window.submodules = {}
 
     this.CircuitOptions = {
       database: 'https://data.flybrainlab.fruitflybrain.org/data/',
@@ -142,6 +143,12 @@ class NeuGFX {
           // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "homecartridge" });
           break;
         }
+        case 'loadCircuitFromString': {
+          window._neuGFX.sendAlert("Loading a circuit...");
+          window._neuGFX.mods.FlyBrainLab.loadCircuitFromString(event.data.data, null);
+          // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "homecartridge" });
+          break;
+        }
         case 'loadCircuitAsData': {
           window._neuGFX.sendAlert("Loading a circuit...");
           window._neuGFX.mods.FlyBrainLab.loadCircuitAsData(event.data.data, null);
@@ -162,6 +169,12 @@ class NeuGFX {
           window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
           break;
         }
+        case 'eval': {
+          window.submodules[event.data.data.name] = event.data.data.data;
+          console.log(window.submodules);
+          eval(event.data.data.data);
+          break;
+        }
         case 'setExperimentConfig': {
           try { 
           window.addAll();
@@ -173,9 +186,7 @@ class NeuGFX {
             try { 
               window.renewCircuit();
             } 
-            catch(err) { 
-
-            };
+            catch(err) {};
           }, 300);
           break;
         }
@@ -343,6 +354,46 @@ class NeuGFX {
       });
       callback();
     });
+  }
+
+  loadSVGFromString(url, callback = function () { }) {
+    this.plotMode = "SVG";
+    $('.activitySlider').remove();
+    try { this.clearGraph(); } catch { };
+    this.clear();
+    var dom = new DOMParser();
+    var svg = dom.parseFromString(url, 'image/svg+xml');
+    this.container.appendChild(svg.rootElement);
+    var svgElement = document.querySelector('svg');
+    $(svgElement).width('100%');
+    $(svgElement).height('100%');
+    var panZoomSVG = svgPanZoom(svgElement, {
+      dblClickZoomEnabled: false,
+      preventMouseEventsDefault: false
+    });
+    window.addEventListener("resize", function () {
+      try {
+        console.log('Resized the SVG...');
+        panZoomSVG.resize();
+        panZoomSVG.updateBBox();
+        panZoomSVG.fit();
+        panZoomSVG.center();
+      }
+      catch (err) {
+        setTimeout(function () {
+          /*
+          console.log('Resized the SVG...');
+          panZoomSVG.resize(); 
+          panZoomSVG.updateBBox(); 
+          panZoomSVG.fit();
+          panZoomSVG.center();*/
+          // window._neuGFX.mods.FlyBrainLab.loadSVG(window._neuGFX.mods.FlyBrainLab.CircuitOptions.database + 'fly.svg', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); });
+        }, 100);
+      }
+    });
+    if (callback != null){
+      callback();
+    }
   }
 
   loadSVGAsData(url, callback = function () { }) {
