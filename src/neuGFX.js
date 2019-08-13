@@ -181,6 +181,7 @@ class NeuGFX {
           }
           catch(err) {};
           window._neuGFX.sendAlert("Setting experiment settings...");
+          console.log("Setting experiment settings...");
           window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
           setTimeout(function() {
             try { 
