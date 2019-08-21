@@ -169,9 +169,13 @@ class NeuGFX {
           window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
           break;
         }
+        case 'loadSubmodule': {
+          window.submodules[event.data.data.name] = event.data.data.data;
+          break;
+        }
         case 'eval': {
           window.submodules[event.data.data.name] = event.data.data.data;
-          console.log(window.submodules);
+          // console.log(window.submodules);
           eval(event.data.data.data);
           break;
         }
