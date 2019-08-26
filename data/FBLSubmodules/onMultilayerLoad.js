@@ -255,6 +255,10 @@ window.simID = 0;
 window.neuron_selector = ".neuron_class, .synapse_class";
 $(neuron_selector).each(function (index, value) {
     $(this).attr('simID', index);
+    if (typeof window.defaultNeuronModel !== 'undefined') {
+        simModels[index] = window.defaultNeuronModel;
+        simNames[index] = window.defaultNeuronModelName;
+    }
     simModels[index] = _NKModels.MembraneModels.MorrisLecar;
     simModels[index].params['name'] = "MorrisLecar";
     simNames[index] = "MorrisLecar";
