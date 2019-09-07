@@ -205,5 +205,5 @@ cartridge_data_set = false;
 
 
 console.log('Loading was successful...');
-window._neuGFX.mods.FlyBrainLab.addFBLPath("Lamina",function() {});
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Lamina",function() {window._neuGFX.mods.FlyBrainLab.loadSubmodule('data/FBLSubmodules/onLaminaLoad.js'); console.log("Submodule loaded.");});
 //window.onLaminaLoad();

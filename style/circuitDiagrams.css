@@ -48,6 +48,11 @@ fill: #9ec026  !important;
 stroke: #9ec026  !important;
 }
 
+.default_class.active, .neuron_class.active{
+	fill: #c06b26  !important;
+	stroke: #c06b26  !important;
+}
+
 .header1 {
     font-family:'Rajdhani', sans-serif;
     font-size: 22px;

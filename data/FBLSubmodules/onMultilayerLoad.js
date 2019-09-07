@@ -35,6 +35,8 @@ wireAutomatically = function (IOData) {
             newNeuron.OSynTotal = 0;
             newNeuron.ISyn = 0;
             newNeuron.OSyn = 0;
+            newNeuron.ISyns = [];
+            newNeuron.OSyns = [];
             newNeuron.postsynapticPartners = 0;
             IONeurons[IOData[IOLayers[i]][j]] = newNeuron;
         }
@@ -88,8 +90,10 @@ generatePinMap = function (IOData, IOLayers, IOSynapses, IOName) {
 
         var indx = (1 + IONeurons[IOSynapses[k][0]].OSyn) * neuronWidth / (IONeurons[IOSynapses[k][0]].OSynTotal + 1) - neuronWidth / 2;
         IONeurons[IOSynapses[k][0]].OSyn += 1;
+        IONeurons[IOSynapses[k][0]].OSyns.push(IOSynapses[k][1]);
         var outdx = (1 + IONeurons[IOSynapses[k][1]].ISyn) * neuronWidth / (IONeurons[IOSynapses[k][1]].ISynTotal + 1) - neuronWidth / 2;
         IONeurons[IOSynapses[k][1]].ISyn += 1;
+        IONeurons[IOSynapses[k][1]].ISyns.push(IOSynapses[k][0]);
         // var indx = 
         //window.ISynapses[i] = window.ISynapses[i] + 1;
 
@@ -157,7 +161,9 @@ generatePinMap = function (IOData, IOLayers, IOSynapses, IOName) {
             .attr("y", getNeuronY(IONeurons[x].layerX, IONeurons[x].layerY))
             .attr("dy", ".35em")
             .text(x)
-            .style("text-anchor", "middle");
+            .style("text-anchor", "middle")
+            .style("fill", "#ffffff")
+            .style("font", "bold 24px Rajdhani");
     }
 
     window._neuGFX.mods.FlyBrainLab.addFBLPath(IOName, function () { });
@@ -412,4 +418,40 @@ window.renewCircuit();
 
 
 
+// Add hover highlights
+$(neuron_selector).hover(function(){
+    myLabel = $(this).attr("label");
+    
+        for (var i = 0; i < IONeurons[myLabel].ISyns.length; i++) {
+            $(neuron_selector).each(function () {
+                if ($(this).attr("label") == IONeurons[myLabel].ISyns[i]) {
+                    $(this).addClass("active");
+                }
+            });
+        }
+        for (var i = 0; i < IONeurons[myLabel].OSyns.length; i++) {
+            $(neuron_selector).each(function () {
+                if ($(this).attr("label") == IONeurons[myLabel].OSyns[i]) {
+                    $(this).addClass("active");
+                }
+            });
+        }
+        
+    }, function(){
 
+        for (var i = 0; i < IONeurons[myLabel].ISyns.length; i++) {
+            $(neuron_selector).each(function () {
+                if ($(this).attr("label") == IONeurons[myLabel].ISyns[i]) {
+                    $(this).removeClass("active");
+                }
+            });
+        }
+        for (var i = 0; i < IONeurons[myLabel].OSyns.length; i++) {
+            $(neuron_selector).each(function () {
+                if ($(this).attr("label") == IONeurons[myLabel].OSyns[i]) {
+                    $(this).removeClass("active");
+                }
+            });
+        }
+
+  });

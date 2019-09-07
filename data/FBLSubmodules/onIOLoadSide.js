@@ -1,16 +1,21 @@
 
-IOName = "X";
+window.fbl.circuitName = 'X';
+window.IOName = 'X';
 
 window.sendExperimentConfig = function () {
     var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
     window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
 }
+if (typeof window.IOData !== 'undefined') {
 
-var IOData = {
-    inputs: [],
-    outputs: []
-};
-
+}
+else
+{
+    window.IOData = {
+        inputs: [],
+        outputs: []
+    };
+}
 
 var IOSynapses = [];
 
@@ -18,11 +23,16 @@ var IOActivities = {
     a: [0.2, 0.5, 0.8, 0.0, 0.1]
 };
 IOActivityLen = 4;
-window.fbl.circuitName = 'X';
 
-window.IOName = 'X';
-window.fbl.experimentConfig['X'] = {};
-window.fbl.experimentConfig['X'].updated = [];
+
+console.log(window.fbl.experimentConfig['antenna']);
+
+if ('antenna' in window.fbl.experimentConfig) {} else {
+    window.fbl.experimentConfig['antenna'] = {};
+    window.fbl.experimentConfig['antenna'].updated = [];
+}
+
+console.log(window.fbl.experimentConfig['antenna']);
 
 wireAutomatically = function (IOData) {
     window.IOSynapses = [];
@@ -193,7 +203,7 @@ svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
 // window.fbl.circuitName = 'cx';
-window.parentNeuropil = 'X';
+window.parentNeuropil = 'antenna';
 $('.fbl-info-container').hide();
 
 window.updateCircuit = function () {
@@ -290,7 +300,7 @@ window.neuron_selector = ".neuron_class, .synapse_class";
 $(neuron_selector).each(function (index, value) {
     $(this).attr('simID', index);
     if ($(this).attr('tooltip-data').includes('BSG')) {
-        simModels[index] = _NKModels.AxonHillockModels.ConnorStevens;
+        simModels[index] = _NKModels.PointNeuronModels.ConnorStevens;
         simModels[index].params['name'] = "FlyBSG";
         simNames[index] = "ConnorStevens";
         simIDs[index] = this;
@@ -307,7 +317,7 @@ $(neuron_selector).each(function (index, value) {
 window.reloadModels = function () {
     for (var key in window.fbl.experimentConfig[window.fbl.circuitName]) {
         $(neuron_selector).each(function (index, value) {
-            var configName = $(value).attr('label');
+            var configName = $(simIDs[index]).attr('tooltip-data').split(" :: ")[0];
             if (key == configName) {
                 console.log('Found previous setting for and updated ' + configName + '.');
                 window.simModels[$(value).attr('simID')] = window.fbl.experimentConfig[window.fbl.circuitName][key];
@@ -318,6 +328,11 @@ window.reloadModels = function () {
 }
 
 window.reloadModels();
+
+$(neuron_selector).each(function (index, value) {
+    var configName = $(simIDs[index]).attr('tooltip-data').split(" :: ")[0];
+    window.fbl.experimentConfig[window.fbl.circuitName][configName] = window.simModels[$(value).attr('simID')];
+});
 
 window.getModelData = function (callback) {
     if ($('.NeuGFX-overlay').length) {
@@ -445,8 +460,8 @@ window.createOverlay = function (simID, simModel) {
         getModelData(function () { $('.NeuGFX-overlay').remove(); });
     });
     var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-    if (!(configName in window.fbl.experimentConfig['X'].updated)) {
-        window.fbl.experimentConfig['X'].updated.push(configName);
+    if (!(configName in window.fbl.experimentConfig['antenna'].updated)) {
+        window.fbl.experimentConfig['antenna'].updated.push(configName);
     }
 }
 
