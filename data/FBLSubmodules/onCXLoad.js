@@ -16,6 +16,27 @@ svgObj.selectAll("*").each(function (d, i) {
     this.setAttribute("hovered", "false");
 });
 
+if (typeof window.correlates_file !== 'undefined') {
+    console.log('Correlates file was found.');
+    window.bioMatches = window.correlates_file;
+    window.bioWorkspace = [];
+
+    for (var i = 0; i < bioMatches[1].length; i++) {
+        window.bioWorkspace[bioMatches[1][i]] = true;
+    }
+}
+else {      
+    $.getJSON('https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json', function (data) {
+        window.correlates_file = data;
+        window.bioMatches = data;
+        window.bioWorkspace = [];
+
+        for (var i = 0; i < bioMatches[1].length; i++) {
+            window.bioWorkspace[bioMatches[1][i]] = true;
+        }
+
+    });
+}
 
 window.sendExperimentConfig = function () {
     var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
@@ -23,6 +44,13 @@ window.sendExperimentConfig = function () {
 }
 
 window.IOName = 'cx';
+if (window.IOName in window.fbl.experimentConfig) {
+}
+else
+{ 
+    window.fbl.experimentConfig['cx'] = {};
+}
+
 window.fbl.experimentConfig['cx'].updated = [];
 
 window.updateCircuit = function () {
@@ -32,8 +60,10 @@ window.updateCircuit = function () {
             window.fbl.experimentConfig['cx'].disabled = [];
             var arrayLength = disabled_temp.length;
             for (var i = 0; i < arrayLength; i++) {
-                if (disabled_temp[i].includes('->')) {
-                    window.fbl.experimentConfig['cx'].disabled.push(disabled_temp[i]);
+                if (disabled_temp[i] !== null) {
+                    if (disabled_temp[i].includes('->')) {
+                        window.fbl.experimentConfig['cx'].disabled.push(disabled_temp[i]);
+                    }
                 }
             }
         }
@@ -48,6 +78,12 @@ window.updateCircuit = function () {
     svgObj.selectAll(".region,.neuron").each(function (d, i) {
         if (this.getAttribute("selected") == "false") {
             window.fbl.experimentConfig['cx'].disabled.push(d3.select(this).attr("label"));
+            var isthisdisabled = d3.select(this).attr("label");
+            if (isthisdisabled == null)
+            {
+                console.log('Problematic element found:');
+                console.log(this);
+            }
         }
     });
     window.sendExperimentConfig();
@@ -257,6 +293,9 @@ window.deactivateElement = function (_this, sendNLP) {
 }
 
 window.toggleByID = function (label, type) {
+    if (label == "None") {
+        type = false;
+    }
     if (bioMatches[1].indexOf(label) > -1) {
         label = bioMatches[0][bioMatches[1].indexOf(label)];
         // console.log('Label is now:',label)
@@ -269,7 +308,7 @@ window.toggleByID = function (label, type) {
         var label_this = (label_pre == null ? '' : label_pre) + ' ' + (label_pos == null ? '' : label_pos) + ' ' + (label_label == null ? '' : label_label);
         // console.log(label_this);
         // if (typeof label_this === 'string' || label_this instanceof String) {
-        if (label_this.includes(label)||label.includes(label_label)||label.includes((label_pre == null ? 'NAN' : label_pre))||label.includes((label_pos == null ? 'NAN' : label_pos))) {
+        if ((label_this == label)||(label.includes(label_label))||(label == (label_pre == null ? 'NAN' : label_pre))||(label == (label_pos == null ? 'NAN' : label_pos))) {
             // console.log('Found match!');
             // console.log(label_this);
             // console.log(label);
@@ -465,10 +504,11 @@ function modelUpdate(NLPInput) {
         window.deactivateAll();
         NLPInput.elements.forEach(function (element) {
             // element = element.replace('a','alpha');
-            // console.log(element);
+            console.log(element);
             toggleByID(element, true);
         });
     }
+    window.updateCircuit();
 }
 
 var neurons = svgObj.selectAll(".neuron");
@@ -529,15 +569,6 @@ window.reloadNeurons3D = function () {
     window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
 }
 
-$.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", function (data) {
-    window.bioMatches = data;
-    window.bioWorkspace = [];
-
-    for (var i = 0; i < bioMatches[1].length; i++) {
-        window.bioWorkspace[bioMatches[1][i]] = true;
-    }
-
-});
 
 
 toggleWorkspaceByUname = function (uname, type) {
