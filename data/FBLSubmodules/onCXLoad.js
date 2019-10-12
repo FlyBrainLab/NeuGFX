@@ -7,6 +7,11 @@ svgObj.selectAll("*").each(function (d, i) {
     }
 });
 
+window.CXSettings = {};
+if (typeof window.CXDiagramName == 'undefined') {
+    window.CXDiagramName = 'cx';
+}
+
 
 svgObj = d3.select(document.querySelector('svg'));
 
@@ -561,7 +566,15 @@ var regions = svgObj.selectAll(".region")
     });
 
 
-window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex", function () { window.fbl.loadFBLSVG('cx', function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); });
+window._neuGFX.mods.FlyBrainLab.addFBLPath("Central Complex", function () { 
+    if (window.CXDiagramName in window._neuGFX.mods.FlyBrainLab.circuitContent) {
+        console.log('Loading a custom diagram.')
+        window._neuGFX.loadSVGFromString(window._neuGFX.mods.FlyBrainLab.circuitContent[window.CXDiagramName], function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); 
+    }
+    else {
+        window.fbl.loadFBLSVG(window.CXDiagramName, function () { window.fbl.loadSubmodule('data/FBLSubmodules/onCXLoad.js'); console.log("Submodule loaded.") }); 
+    }
+});
 // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "centralcomplex_diagram_v2" });
 
 window.reloadNeurons3D = function () {

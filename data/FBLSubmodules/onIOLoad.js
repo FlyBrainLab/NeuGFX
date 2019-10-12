@@ -144,7 +144,7 @@ generatePinMap(IOData, IOSynapses, IOName);
 svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
-// window.fbl.circuitName = 'cx';
+// window.parentNeuropil = 'cx';
 window.parentNeuropil = 'cx';
 $('.fbl-info-container').hide();
 
@@ -247,13 +247,13 @@ $(neuron_selector).each(function (index, value) {
 });
 
 window.reloadModels = function () {
-    for (var key in window.fbl.experimentConfig[window.fbl.circuitName]) {
+    for (var key in window.fbl.experimentConfig[window.parentNeuropil]) {
         $(neuron_selector).each(function (index, value) {
             var configName = $(value).attr('label');
             if (key == configName) {
                 console.log('Found previous setting for and updated ' + configName + '.');
-                window.simModels[$(value).attr('simID')] = window.fbl.experimentConfig[window.fbl.circuitName][key];
-                window.simNames[index] = window.fbl.experimentConfig[window.fbl.circuitName][key]['params']['name'];
+                window.simModels[$(value).attr('simID')] = window.fbl.experimentConfig[window.parentNeuropil][key];
+                window.simNames[index] = window.fbl.experimentConfig[window.parentNeuropil][key]['params']['name'];
             }
         });
     }
@@ -261,18 +261,21 @@ window.reloadModels = function () {
 
 window.reloadModels();
 
-window.getModelData = function (callback) {
+window.getModelData = function (callback, simModel) {
     if ($('.NeuGFX-overlay').length) {
-        modelData = {};
+        var modelData = {};
+        console.log(simModel);
+        console.log(window.simModels[simID]);
         $(".modelInput").each(function (index, value) {
             //console.log(this);
             // if (!($(this).attr('entrytype') in modelData))
                 // simModels[simID][$(this).attr('entrytype')] = {};
                 // modelData[$(this).attr('entrytype')] = {};
-            simModels[simID][$(this).attr('entrytype')][$(this).attr('name')] = this.value;
-            var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-            window.fbl.experimentConfig[window.fbl.circuitName][configName] = simModel;
+            window.simModels[simID][$(this).attr('entrytype')][$(this).attr('name')] = this.value;
+
         });
+        var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
+        window.fbl.experimentConfig[window.parentNeuropil][configName] = simModel;
         modelData['name'] = $('#modelSelect')[0].value;
         $('.container-fullwidth').removeClass("is-blurred");
         
@@ -303,7 +306,7 @@ window.createOverlay = function (simID, simModel) {
     rightc.classList.add("NeuGFX-overlay-column");
     row.appendChild(rightc);
     // Create the Selection List
-    h4 = document.createElement("h4");
+    var h4 = document.createElement("h4");
     h4.textContent = "Model Library";
     leftc.appendChild(h4);
     var selectList = document.createElement("select");
@@ -317,19 +320,56 @@ window.createOverlay = function (simID, simModel) {
         selectList.appendChild(option);
     }
     $(selectList).on('change', function () {
-        modelName = $('#modelSelect')[0].value;
+        console.log(_NKModels);
+        var modelName = $('#modelSelect')[0].value;
         for (var modelFamily in _NKModels) {
             for (var model in _NKModels[modelFamily]) {
                 if (model == modelName) {
-                    data = _NKModels[modelFamily][model];
-                    simModels[simID] = data;
-                    simModels[simID].params['name'] = model;
+                    var data = JSON.parse(JSON.stringify(_NKModels[modelFamily][model]));
+                    console.log(_NKModels);
+                    console.log(JSON.parse(JSON.stringify(_NKModels[modelFamily][model])));
+                    console.log(data);
+
+                    window.simModels[simID] = {};
+                    console.log(window.simModels[simID]);
+                    console.log(JSON.parse(JSON.stringify(_NKModels[modelFamily][model])));
+                    // window.simModels[simID] = JSON.parse(JSON.stringify(_NKModels[modelFamily][model]));
+                    window.simModels[simID] =  $.extend({}, JSON.parse(JSON.stringify(_NKModels[modelFamily][model])));
+                    let template = JSON.parse(JSON.stringify(_NKModels[modelFamily][model]));
+                    console.log('Template:', template);
+                    console.log('Model:', window.simModels[simID]);
+
+
+
+                    window.simModels[simID].params['name'] = model;
+                    console.log(window.simModels[simID]);
                     simNames[simID] = model;
-                    simModel = simModels[simID];
-                    getModelData(function () { $('.NeuGFX-overlay').remove(); createOverlay(simID, simModel); });
+                    // simModel = window.simModels[simID];
+                    
+
+                    getModelData(function () { $('.NeuGFX-overlay').remove(); 
+                                                for (var i in window.simModels[simID])
+                                                {
+                                                    console.log(window.simModels[simID][i]);
+                                                    for (var j in window.simModels[simID][i])
+                                                    {
+                                                        console.log(j);
+                                                        if ((!(j in template[i]))&&(j!='name'))
+                                                        {
+                                                            console.log(i, j)
+                                                            delete window.simModels[simID][i][j];
+                                                        }
+                                                    }
+                                                }
+                                                createOverlay(simID, window.simModels[simID]); }, window.simModels[simID]);
                     console.log(simIDs[simID]);
+                    console.log(window.simModels[simID]);
                     var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-                    window.fbl.experimentConfig[window.fbl.circuitName][configName] = simModel;
+                    console.log(configName);
+                    window.fbl.experimentConfig[window.parentNeuropil][configName] = simModel;
+
+                    
+
                 }
             }
         }
@@ -346,10 +386,10 @@ window.createOverlay = function (simID, simModel) {
     h4.textContent = "Model Definition";
     rightc.appendChild(h4);
     // Add the states and Parameters
-    data = simModel;
+    var data = simModel;
     selectList.value = simNames[simID];
     for (var state in data.states) {
-        h6 = document.createElement("h6");
+        var h6 = document.createElement("h6");
         h6.textContent = state;
         leftc.appendChild(h6);
         var inputElement = document.createElement("input");
@@ -364,7 +404,7 @@ window.createOverlay = function (simID, simModel) {
 
     for (var param in data.params) {
         if (param != "name") {
-            h6 = document.createElement("h6");
+            var h6 = document.createElement("h6");
             h6.textContent = param;
             middlec.appendChild(h6);
             var inputElement = document.createElement("input");
@@ -384,13 +424,30 @@ window.createOverlay = function (simID, simModel) {
         e.stopPropagation();
     });
     $(document).on('click', function (event) {
-        getModelData(function () { $('.NeuGFX-overlay').remove(); });
+        
+        getModelData(function () { var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
+        console.log(configName);
+        window.fbl.experimentConfig[window.parentNeuropil][configName] = window.simModels[simID];
+        $('.NeuGFX-overlay').remove(); }, window.simModels[simID]);
     });
     var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-    if (!(configName in window.fbl.experimentConfig['cx'].updated)) {
-        window.fbl.experimentConfig['cx'].updated.push(configName);
+    if (!(window.fbl.experimentConfig[window.parentNeuropil].updated.includes(configName))) {
+        console.log(window.fbl.experimentConfig[window.parentNeuropil].updated);
+        console.log(configName);
+        window.fbl.experimentConfig[window.parentNeuropil].updated.push(configName);
     }
 }
+
+$(neuron_selector).on("click contextmenu", function (e) {
+    getModelData(function () { $('.NeuGFX-overlay').remove(); });
+    e.preventDefault();
+    simID = $(this).attr('simID');
+    var simModel = JSON.parse(JSON.stringify(simModels[simID]));
+    if (e.type == "contextmenu") {
+        // Create the Overlay Div
+        createOverlay(simID, simModel);
+    }
+});
 
 $(neuron_selector).on("click contextmenu", function (e) {
     getModelData(function () { $('.NeuGFX-overlay').remove(); });
