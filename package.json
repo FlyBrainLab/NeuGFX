@@ -32,7 +32,7 @@
     "exports-loader": "^0.7.0",
     "fuse.js": "^3.4.4",
     "izitoast": "^1.4.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.11",
     "mustache": "^2.3.2",
     "npm-watch": "^0.3.0",
