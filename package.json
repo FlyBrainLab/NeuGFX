@@ -10,7 +10,8 @@
   "scripts": {
     "build": "npx webpack --config webpack.config.js",
     "run-build": "npm run build",
-    "watch": "npm-watch"
+    "watch": "npm-watch",
+    "dev": "npx webpack --config webpack.config.js --watch"
   },
   "repository": {
     "type": "git",
