@@ -326,10 +326,8 @@ window.createOverlay = function (simID, simModel) {
             for (var model in _NKModels[modelFamily]) {
                 if (model == modelName) {
                     var data = JSON.parse(JSON.stringify(_NKModels[modelFamily][model]));
-                    console.log(_NKModels);
                     console.log(JSON.parse(JSON.stringify(_NKModels[modelFamily][model])));
-                    console.log(data);
-
+                    
                     window.simModels[simID] = {};
                     console.log(window.simModels[simID]);
                     console.log(JSON.parse(JSON.stringify(_NKModels[modelFamily][model])));
@@ -343,7 +341,7 @@ window.createOverlay = function (simID, simModel) {
 
                     window.simModels[simID].params['name'] = model;
                     console.log(window.simModels[simID]);
-                    simNames[simID] = model;
+                    window.simNames[simID] = model;
                     // simModel = window.simModels[simID];
                     
 
@@ -363,10 +361,11 @@ window.createOverlay = function (simID, simModel) {
                                                 }
                                                 createOverlay(simID, window.simModels[simID]); }, window.simModels[simID]);
                     console.log(simIDs[simID]);
-                    console.log(window.simModels[simID]);
+                    console.log('Model Name', window.simModels[simID]);
+
                     var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
                     console.log(configName);
-                    window.fbl.experimentConfig[window.parentNeuropil][configName] = simModel;
+                    window.fbl.experimentConfig[window.parentNeuropil][configName] = JSON.parse(JSON.stringify(window.simModels[simID]));
 
                     
 
@@ -374,7 +373,7 @@ window.createOverlay = function (simID, simModel) {
             }
         }
         window.sendExperimentConfig();
-    })
+    });
     // Create the headers for the overlay
     h4 = document.createElement("h4");
     h4.textContent = "States";
@@ -388,9 +387,30 @@ window.createOverlay = function (simID, simModel) {
     // Add the states and Parameters
     var data = simModel;
     selectList.value = simNames[simID];
+    var modelName = selectList.value;
+    window.myModel = {};
+    for (var modelFamily in _NKModels) {
+        for (var model in _NKModels[modelFamily]) {
+            if (model == modelName) {
+                window.myModel = JSON.parse(JSON.stringify(_NKModels[modelFamily][model]));
+            }
+        }
+    }
+    if (Object.keys(window.myModel).length === 0) {
+        window.myModel = JSON.parse(JSON.stringify(data));
+        if (!("names" in window.myModel)) {
+            window.myModel['names'] = {};
+            for (var state in data.states) {
+                window.myModel['names'][state] = state;
+            }
+            for (var param in data.params) {
+                window.myModel['names'][param] = param;
+            }
+        }
+    }
     for (var state in data.states) {
         var h6 = document.createElement("h6");
-        h6.textContent = state;
+        h6.textContent = window.myModel['names'][state];
         leftc.appendChild(h6);
         var inputElement = document.createElement("input");
         inputElement.setAttribute('type', "text");
@@ -405,7 +425,7 @@ window.createOverlay = function (simID, simModel) {
     for (var param in data.params) {
         if (param != "name") {
             var h6 = document.createElement("h6");
-            h6.textContent = param;
+            h6.textContent = window.myModel['names'][param];
             middlec.appendChild(h6);
             var inputElement = document.createElement("input");
             inputElement.setAttribute('type', "text");
@@ -424,9 +444,8 @@ window.createOverlay = function (simID, simModel) {
         e.stopPropagation();
     });
     $(document).on('click', function (event) {
-        
         getModelData(function () { var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-        console.log(configName);
+        console.log('Saving the following config:', window.simModels[simID]);
         window.fbl.experimentConfig[window.parentNeuropil][configName] = window.simModels[simID];
         $('.NeuGFX-overlay').remove(); }, window.simModels[simID]);
     });
@@ -437,17 +456,6 @@ window.createOverlay = function (simID, simModel) {
         window.fbl.experimentConfig[window.parentNeuropil].updated.push(configName);
     }
 }
-
-$(neuron_selector).on("click contextmenu", function (e) {
-    getModelData(function () { $('.NeuGFX-overlay').remove(); });
-    e.preventDefault();
-    simID = $(this).attr('simID');
-    var simModel = JSON.parse(JSON.stringify(simModels[simID]));
-    if (e.type == "contextmenu") {
-        // Create the Overlay Div
-        createOverlay(simID, simModel);
-    }
-});
 
 $(neuron_selector).on("click contextmenu", function (e) {
     getModelData(function () { $('.NeuGFX-overlay').remove(); });

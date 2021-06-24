@@ -131,17 +131,17 @@ export class FlyBrainLab {
     addFBLPath(name, callback) {
         var previouslyExisting = false;
         var arrayLen = this.linkPathConfig.length;
-        for (var i = 0; i < arrayLen-1; i++) {
+        for (var i = 0; i < arrayLen - 1; i++) {
             if (previouslyExisting == false)
-            if (this.linkPathConfig[i].name == name) {
-                console.log('Found ' + name + ", index: " + i);
-                this.linkPathConfig = this.linkPathConfig.slice(0, i+1);
-                console.log(this.linkPathConfig);
-                console.log(previouslyExisting);
-                this.linkPathConfig[i].callback = callback;
-                previouslyExisting = true;
-                break;
-            }
+                if (this.linkPathConfig[i].name == name) {
+                    console.log('Found ' + name + ", index: " + i);
+                    this.linkPathConfig = this.linkPathConfig.slice(0, i + 1);
+                    console.log(this.linkPathConfig);
+                    console.log(previouslyExisting);
+                    this.linkPathConfig[i].callback = callback;
+                    previouslyExisting = true;
+                    break;
+                }
         }
         if (previouslyExisting == false) {
             var a = document.createElement('a');
@@ -155,7 +155,7 @@ export class FlyBrainLab {
             this.linkPathConfig.push({ name: name, callback: callback });
         }
         var _this = this;
-        setTimeout(function(){_this.updateFBLPath();}, 50);
+        setTimeout(function () { _this.updateFBLPath(); }, 50);
     }
 
     popFBLPath() {
@@ -170,14 +170,14 @@ export class FlyBrainLab {
         a.appendChild(linkText);
         a.href = "#";
         $('.fbl-path').append(a);
-        $(a).click( function () {
+        $(a).click(function () {
             window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.") });
         });
         //console.log("Link Path:", this.linkPathConfig);
         for (var i = 1; i < this.linkPathConfig.length; i++) {
             var a = document.createElement('a');
             var linkText = document.createTextNode(this.linkPathConfig[i].name);
-            var b = document.createTextNode(" ≫ ");
+            var b = document.createTextNode(" > ");
             a.appendChild(linkText);
             a.href = "#";
             $('.fbl-path').append(b);
@@ -495,7 +495,15 @@ export class FlyBrainLab {
     loadNewLPU() {
         $("svg g").each(function () {
             //console.log($(this).find('title').text());
-            $(this).attr("tooltip-data", $(this).find('title').text());
+            if (($(this).find('title').text() === undefined) || ($(this).find('title').text().length == 0)) {
+                // console.log('Undefined'); 
+                // console.log($(this).find('title').text());
+            }
+            else {
+                $(this).attr("tooltip-data", $(this).find('title').text());
+                console.log('Hello');
+                console.log($(this).find('title').text());
+            }
             //$(this).find('title').remove();
             //console.log($(this).find('tooltip-data').text());
         });
@@ -510,6 +518,17 @@ export class FlyBrainLab {
             }
         });
 
+        $("svg g.edge").each(function () {
+            //console.log($(this).find('tooltip-data').text());
+            var synapse_info = $(this).attr('tooltip-data');
+            if (typeof synapse_info === 'string') {
+                $(this).attr("synapse_info", synapse_info);
+                $(this).attr("presyn", synapse_info.split('->')[0]);
+                $(this).attr("postsyn", synapse_info.split('->')[1]);
+                $(this).attr("tags", '');
+            }
+        });
+
         $("svg g.neuron_class").each(function () {
             //console.log($(this).find('tooltip-data').text());
             var name = $(this).attr('tooltip-data').split(' :: ')[2];
@@ -517,7 +536,15 @@ export class FlyBrainLab {
             $(this).attr("tags", $(this).attr("name") + ' ' + $(this).attr('tooltip-data').split(' :: ')[3]);
         });
 
-        $('svg g.synapse_class,.synapse_class').on('click', function () {
+        $("svg g.node").each(function () {
+            //console.log($(this).find('tooltip-data').text());
+            var name = $(this).attr('tooltip-data');
+            $(this).attr("name", name);
+            $(this).attr("tags", '');
+            $(this).attr("id", name);
+        });
+
+        $('svg g.synapse_class,.synapse_class,.edge').on('click', function () {
             if ($(this).attr('inactive')) {
                 $(this).removeAttr('inactive');
                 var presyn = $(this).attr('presyn');
@@ -531,16 +558,16 @@ export class FlyBrainLab {
             } else {
                 $(this).attr('inactive', 'true');
             }
-            try { window.updateCircuit();} catch {};
+            try { window.updateCircuit(); } catch { };
         });
 
-        $('svg g.neuron_class,.neuron_class').on('click', function () {
+        $('svg g.neuron_class,.neuron_class,.node').on('click', function () {
             if ($(this).attr('inactive')) {
                 $(this).removeAttr('inactive');
-                var neuron = $(this).attr('name');
+                var neuron = $(this).attr('tooltip-data').split(' :: ')[0];
                 var a = {};
                 a[neuron] = true;
-                try { window.toggleByDiagramName(a, "true");} catch {};
+                try { window.toggleByDiagramName(a, "true"); } catch { };
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).removeAttr('inactive');
@@ -549,10 +576,10 @@ export class FlyBrainLab {
                 });
             } else {
                 $(this).attr('inactive', 'true');
-                var neuron = $(this).attr('name');
+                var neuron = $(this).attr('tooltip-data').split(' :: ')[0];
                 var a = {};
                 a[neuron] = true;
-                try { window.toggleByDiagramName(a, "false");} catch {};
+                try { window.toggleByDiagramName(a, "false"); } catch { };
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).attr('inactive', 'true');
@@ -561,7 +588,7 @@ export class FlyBrainLab {
                 });
 
             }
-            try { window.updateCircuit();} catch {};
+            try { window.updateCircuit(); } catch { };
         });
         setTimeout(function () {
             $('.default_class, .synapse_class, .neuron_class').qtip({

@@ -102,8 +102,8 @@ class NeuGFX {
       neuronColor: "#bbc7a4",
       synapseColor: '#E75A7C',
       edgeColor: '#8DA7BE',
-      gravity: 25.,
-      layoutTimeout: 10000,
+      gravity: 1.,
+      layoutTimeout: 1000,
       export: function () {
         console.log('exporting...');
         var output = window.s.toSVG({ download: true, filename: 'graph_output.svg', size: 1000 });
@@ -180,18 +180,18 @@ class NeuGFX {
           break;
         }
         case 'setExperimentConfig': {
-          try { 
-          window.addAll();
+          try {
+            window.addAll();
           }
-          catch(err) {};
+          catch (err) { };
           window._neuGFX.sendAlert("Setting experiment settings...");
           console.log("Setting experiment settings...");
           window._neuGFX.mods.FlyBrainLab.experimentConfig = JSON.parse(event.data.data);
-          setTimeout(function() {
-            try { 
+          setTimeout(function () {
+            try {
               window.renewCircuit();
-            } 
-            catch(err) {};
+            }
+            catch (err) { };
           }, 300);
           break;
         }
@@ -219,15 +219,13 @@ class NeuGFX {
         case 'Data': {
           var sender = event.data.data.sender;
           var value = event.data.data.value;
-          //console.log(data);
           var type = value.type;
           console.log("Received Data:");
           console.log(value);
           console.log("Received Data Type:");
           console.log(value.type);
           var active_neurons = [];
-          for (var i in value)
-          {
+          for (var i in value) {
             active_neurons.push(value[i].name);
           }
           if (value.type == "append") {
@@ -247,8 +245,7 @@ class NeuGFX {
             }
             catch { };
           }
-          else
-          {
+          else {
             var message = { command: 'add', elements: active_neurons };
             console.log(message);
             window.modelUpdate(message);
@@ -270,7 +267,7 @@ class NeuGFX {
         this.mods.FlyBrainLab = new FlyBrainLab(this.container, { master: this });
         break;
       case "Plotter":
-        this.mods.Plotter = new GFXPlotter(100, 100);
+        // this.mods.Plotter = new GFXPlotter(100, 100);
         $('.fbl-plotter-container').hide();
         break;
     }
@@ -317,8 +314,8 @@ class NeuGFX {
     });
     window.addEventListener("resize", function () {
       console.log('Resized the SVG...');
-      panZoomSVG.resize(); 
-      panZoomSVG.updateBBox(); 
+      panZoomSVG.resize();
+      panZoomSVG.updateBBox();
       panZoomSVG.fit();
       panZoomSVG.center();
     });
@@ -339,14 +336,14 @@ class NeuGFX {
       });
       window.addEventListener("resize", function () {
         try {
-        console.log('Resized the SVG...');
-        panZoomSVG.resize(); 
-        panZoomSVG.updateBBox(); 
-        panZoomSVG.fit();
-        panZoomSVG.center();
+          console.log('Resized the SVG...');
+          panZoomSVG.resize();
+          panZoomSVG.updateBBox();
+          panZoomSVG.fit();
+          panZoomSVG.center();
         }
-        catch(err) {
-          setTimeout(function() {
+        catch (err) {
+          setTimeout(function () {
             /*
             console.log('Resized the SVG...');
             panZoomSVG.resize(); 
@@ -396,7 +393,7 @@ class NeuGFX {
         }, 100);
       }
     });
-    if (callback != null){
+    if (callback != null) {
       callback();
     }
   }
@@ -409,8 +406,7 @@ class NeuGFX {
     this.clear();
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
-    xhr.addEventListener('load', function(ev)
-    {
+    xhr.addEventListener('load', function (ev) {
       var xml = ev.target.response;
       var dom = new DOMParser();
       var svg = dom.parseFromString(xml, 'image/svg+xml');
@@ -424,14 +420,14 @@ class NeuGFX {
       });
       window.addEventListener("resize", function () {
         try {
-        console.log('Resized the SVG...');
-        panZoomSVG.resize(); 
-        panZoomSVG.updateBBox(); 
-        panZoomSVG.fit();
-        panZoomSVG.center();
+          console.log('Resized the SVG...');
+          panZoomSVG.resize();
+          panZoomSVG.updateBBox();
+          panZoomSVG.fit();
+          panZoomSVG.center();
         }
-        catch(err) {
-          setTimeout(function() {
+        catch (err) {
+          setTimeout(function () {
             /*
             console.log('Resized the SVG...');
             panZoomSVG.resize(); 
@@ -445,6 +441,22 @@ class NeuGFX {
       callback();
     });
     xhr.send(null);
+  }
+
+  loadrawGEXF(gexfcode, callback = function () { }) {
+    var p = new DOMParser();
+    var lines = gexfcode.split('\n');
+    lines.splice(0, 1);
+    var gexfcode = lines.join('\n');
+    console.log(gexfcode);
+    var url = p.parseFromString(gexfcode, 'application/xml');
+    console.log(url);
+    this.plotMode = "sigma";
+    $('.activitySlider').remove();
+    try { this.clearGraph(); } catch { };
+    this.clear();
+    this.CircuitOptions.url = url;
+    this.initializeGEXF(this.CircuitOptions);
   }
 
   loadGEXF(url, callback = function () { }) {
@@ -510,8 +522,10 @@ class NeuGFX {
       settings: defaultSettings
     });
 
-    console.log(sigma.parsers);
     window.s = this.s;
+
+    let a = `_hidden_meshes = []`;
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'Execute', content: a });
 
     window.generateTooltip = function (data) {
       var templateStart = '' +
@@ -530,54 +544,86 @@ class NeuGFX {
       console.log(template);
       return template;
     }
-    sigma.parsers.gexf(CircuitOptions.database + CircuitOptions.url + '.gexf', this.s,
+    if (typeof CircuitOptions.url === 'string') {
+      var connect_in = CircuitOptions.database + CircuitOptions.url + '.gexf';
+    }
+    else {
+      var connect_in = CircuitOptions.url;
+    }
+    sigma.parsers.gexf(connect_in, this.s,
       function () {
-        var dragListener = sigma.plugins.dragNodes(window.s, window.s.renderers[0]);
-        dragListener.bind('startdrag', function (event) {
-          window.s.settings('drawEdges', false);
-        });
-        dragListener.bind('drag', function (event) {
-        });
-        dragListener.bind('drop', function (event) {
-        });
-        dragListener.bind('dragend', function (event) {
-          window.s.settings('drawEdges', true);
-        });
-        // this is needed in case the original JSON doesn't have color / size / x-y attributes 
         var i,
           nodes = window.s.graph.nodes(),
           len = nodes.length;
+        var node_color_map = {};
         for (i = 0; i < len; i++) {
+
           nodes[i].x = Math.random();
-          nodes[i].idk = nodes[i].attributes['class-**'];
-          nodes[i].label = nodes[i].attributes['BioName'];
+          nodes[i].color = nodes[i].attributes['color'];
+          node_color_map[nodes[i].id] = nodes[i].color;
+          try {
+            nodes[i].rid = nodes[i].attributes['rid'];
+          }
+          catch (err) {
+          }
           nodes[i].y = Math.random();
           nodes[i].size = window.s.graph.degree(nodes[i].id);
-          //console.log(nodes[i]);
-          if (nodes[i].label.indexOf('Synapse') > -1) {
-            nodes[i].color = CircuitOptions.synapseColor;
+          try {
+
+            if (nodes[i].label.indexOf('Synapse') > -1) {
+              nodes[i].color = CircuitOptions.synapseColor;
+            }
           }
-          else
-            nodes[i].color = CircuitOptions.neuronColor;
+          catch (err) {
+          }
           nodes[i].type = 'square';
           nodes[i].image = {};
         }
         var edges = window.s.graph.edges(),
           len = edges.length;
+        // console.log('Nodes:', nodes);
+        // console.log('Edges:', edges);
         for (var i = 0; i < len; i++) {
-          //console.log(edges[i]);
-          edges[i].color = CircuitOptions.edgeColor;
+          edges[i].color = node_color_map[edges[i]['source']];
         }
-
-        // Refresh the display:
+        window.dispatch_highlight = function (x) {
+          let a = `a = {'data': {'commands': {'pin': [['word'], []]} },'messageType': 'Command','widget': 'NLP'}
+client = fbl.get_client()
+client.tryComms(a)`;
+          a = a.replace('word', x['data']['node']['rid']);
+          window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'Execute', content: a });
+          // console.log(a);
+        }
+        window.dispatch_resume = function (x) {
+          let a = `a = {'data': {'commands': {'unpin': [['word'], []]} },'messageType': 'Command','widget': 'NLP'}
+client = fbl.get_client()
+client.tryComms(a)`;
+          a = a.replace('word', x['data']['node']['rid']);
+          window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'Execute', content: a });
+          // console.log(a);
+        }
+        window.dispatch_toggle = function (x) {
+          let a = `_hidden_meshes = _hidden_meshes
+if 'word' in _hidden_meshes:
+    a = {'data': {'commands': {'show': [['word'], []]} },'messageType': 'Command','widget': 'NLP'}
+    _hidden_meshes.remove('word')
+else:
+    a = {'data': {'commands': {'hide': [['word'], []]} },'messageType': 'Command','widget': 'NLP'}
+    _hidden_meshes.append('word')
+client = fbl.get_client()
+client.tryComms(a)`;
+          a = a.replace(/word/g, x['data']['node']['rid']);
+          window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'Execute', content: a });
+        }
+        window.s.bind('overNode', (e) => { window.dispatch_highlight(e); });
+        window.s.bind('clickNode', (e) => { window.dispatch_toggle(e); });
+        window.s.bind('outNode', (e) => { window.dispatch_resume(e); });
         window.s.refresh();
-        // ForceAtlas Layout
+        // ForceAtlas
         window.s.startForceAtlas2({ worker: true, barnesHutOptimize: true, gravity: CircuitOptions.gravity, strongGravityMode: false, edgeWeightInfluence: 1, normal: 1.0, slowDown: 5.0 });
         setTimeout(function () { window.s.stopForceAtlas2(); }, CircuitOptions.layoutTimeout);
         if (len == 0)
           window.s.stopForceAtlas2();
-        console.log('Refreshed!');
-        console.log("adding tooltips...");
         var tooltipInstance = sigma.plugins.tooltips(
           window.s, window.s.renderers[0],
           {
@@ -595,7 +641,7 @@ class NeuGFX {
               }
             }]
           }
-        ); /* */
+        );
 
         tooltipInstance.bind('shown', function (event) {
           console.log('tooltip shown', event);

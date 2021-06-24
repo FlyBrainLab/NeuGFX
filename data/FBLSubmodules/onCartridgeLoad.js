@@ -189,9 +189,10 @@ window.onAddAllClick = function () {
         .attr("count", 0);
     //ffboMesh.showAll();
     //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "remove neurons" });
-    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "homecartridge" });
+    window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "home_cart" });
+    // window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "show $home$" }, '*');
     //window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: "TH-F-200073" });
-    //neuList.forEach(function(el) {el = el.replace("alpha", "a"); window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "add " + el + " in column home" });});
+    // neuList.forEach(function(el) {el = el.replace("alpha", "a"); window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPquery', query: "add " + el + " in column home" });});
 
     svgObj.selectAll(".neuron-block")
         .attr("visible", "true")
