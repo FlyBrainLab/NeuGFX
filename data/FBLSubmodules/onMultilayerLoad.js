@@ -21,6 +21,23 @@ for (var i = 0; i < IOLayers.length; i++) {
     IOLayerData[IOLayers[i]] = newLayer;
 }
 
+getLayerColor = function(i) {
+    if (i == 0)
+    return "rgb(230,57,70)";
+    if (i == 1)
+    return "rgb(27,153,139)";
+    if (i == 2)
+    return "rgb(35,87,137)";
+    if (i == 3)
+    return "rgb(239,170,196)";
+    if (i == 4)
+    return "rgb(215,206,178)";
+    if (i == 5)
+    return "rgb(234,247,207)";
+    // return "rgb(206,181,167)";
+    return "rgb(0,189,210)";
+}
+
 wireAutomatically = function (IOData) {
     window.IONeurons = {};
     for (var i = 0; i < IOLayers.length; i++) {
@@ -154,7 +171,7 @@ generatePinMap = function (IOData, IOLayers, IOSynapses, IOName) {
             .attr("class", "neuron_class")
             .attr("selected", "true")
             .attr("tooltip-data", x + " :: " + "This is a neuron in layer " + IONeurons[x].layer + ".")
-            .style("fill", "rgb(0,189,210)")
+            .style("fill", getLayerColor(IONeurons[x].layerY))
             .text(x);
         var neuronText = svgObj.append("text")
             .attr("x", getNeuronX(IONeurons[x].layerX, IONeurons[x].layerY))
@@ -179,6 +196,7 @@ svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
 window.fbl.circuitName = IOName;
+window.fbl.experimentConfig[IOName] = {'disabled': []};
 
 window.updateCircuit = function () {
     window.fbl.experimentConfig[IOName].disabled = [];
@@ -265,7 +283,7 @@ $(neuron_selector).each(function (index, value) {
         simModels[index] = window.defaultNeuronModel;
         simNames[index] = window.defaultNeuronModelName;
     }
-    simModels[index] = _NKModels.MembraneModels.MorrisLecar;
+    simModels[index] = {'states': {}, 'params': {}};
     simModels[index].params['name'] = "MorrisLecar";
     simNames[index] = "MorrisLecar";
     simIDs[index] = this;
@@ -455,3 +473,19 @@ $(neuron_selector).hover(function(){
         }
 
   });
+
+
+
+window.toggleByDiagramName = function (o, type) {
+    console.log(o, type);
+    Object.keys(o).forEach(function(name) {
+        name = '"' + name.split(' :: ')[0] + '"';
+        console.log(name);
+        if (type == "true") {
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: name });
+            }
+            if (type == "false") {
+            window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPremoveByUname', uname: name });
+            }
+        });
+};

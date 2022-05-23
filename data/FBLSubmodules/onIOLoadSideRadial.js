@@ -1,16 +1,21 @@
 
-IOName = "X";
+IOName = "Antenna";
 
 window.sendExperimentConfig = function () {
     var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
     window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'loadExperimentConfig', config: experimentConfig });
 }
 
+if (typeof window.IOData !== 'undefined') {
 
-var IOData = {
-    inputs: [],
-    outputs: []
-};
+}
+else
+{
+    window.IOData = {
+        inputs: ["Ir31a", "Ir41a", "Ir64a.DC4", "Ir64a.DP1m", "Ir75a", "Ir75d", "Ir76a", "Ir84a", "Ir92a", "Or1a", "Or2a", "Or7a", "Or9a", "Or10a", "Or13a", "Or19a", "Or22a", "Or22b", "Or23a", "Or30a", "Or33a", "Or33b", "Or33c", "Or35a", "Or42a", "Or42b", "Or43a", "Or43b", "Or45a", "Or45b", "Or46a", "Or47a", "Or47b", "Or49a", "Or49b", "Or59a", "Or59b", "Or59c", "Or65a", "Or67a", "Or67b", "Or67c", "Or69a", "Or71a", "Or74a", "Or82a", "Or83c", "Or85a", "Or85b", "Or85c", "Or85d", "Or85e", "Or85f", "Or88a", "Or92a", "Or94a", "Or94b", "Or98a"],
+        outputs: []
+    };
+}
 
 var IOSynapses = [];
 
@@ -18,11 +23,13 @@ var IOActivities = {
     a: [0.2, 0.5, 0.8, 0.0, 0.1]
 };
 IOActivityLen = 4;
-window.fbl.circuitName = 'X';
+window.fbl.circuitName = 'antenna';
 
-window.IOName = 'X';
-window.fbl.experimentConfig['X'] = {};
-window.fbl.experimentConfig['X'].updated = [];
+window.IOName = 'Antenna';
+if ('antenna' in window.fbl.experimentConfig) {} else {
+    window.fbl.experimentConfig['antenna'] = {};
+    window.fbl.experimentConfig['antenna'].updated = [];
+}
 
 wireAutomatically = function (IOData) {
     window.IOSynapses = [];
@@ -197,7 +204,7 @@ svgObj.selectAll("text").style("pointer-events", "none");
 
 window.fbl.addCircuit(IOName);
 // window.fbl.circuitName = 'cx';
-window.parentNeuropil = 'X';
+window.parentNeuropil = 'antenna';
 $('.fbl-info-container').hide();
 
 window.updateCircuit = function () {
@@ -295,7 +302,7 @@ $(neuron_selector).each(function (index, value) {
     $(this).attr('simID', index);
     if ($(this).attr('tooltip-data').includes('BSG')) {
         simModels[index] = _NKModels.AxonHillockModels.ConnorStevens;
-        simModels[index].params['name'] = "FlyBSG";
+        simModels[index].params['name'] = "ConnorStevens";
         simNames[index] = "ConnorStevens";
         simIDs[index] = this;
     }
@@ -311,7 +318,7 @@ $(neuron_selector).each(function (index, value) {
 window.reloadModels = function () {
     for (var key in window.fbl.experimentConfig[window.fbl.circuitName]) {
         $(neuron_selector).each(function (index, value) {
-            var configName = $(value).attr('label');
+            var configName = $(simIDs[index]).attr('tooltip-data').split(" :: ")[0];
             if (key == configName) {
                 console.log('Found previous setting for and updated ' + configName + '.');
                 window.simModels[$(value).attr('simID')] = window.fbl.experimentConfig[window.fbl.circuitName][key];
@@ -449,8 +456,8 @@ window.createOverlay = function (simID, simModel) {
         getModelData(function () { $('.NeuGFX-overlay').remove(); });
     });
     var configName = $(simIDs[simID]).attr('tooltip-data').split(" :: ")[0];
-    if (!(configName in window.fbl.experimentConfig['X'].updated)) {
-        window.fbl.experimentConfig['X'].updated.push(configName);
+    if (!(configName in window.fbl.experimentConfig['antenna'].updated)) {
+        window.fbl.experimentConfig['antenna'].updated.push(configName);
     }
 }
 

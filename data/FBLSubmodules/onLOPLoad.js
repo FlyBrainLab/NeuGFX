@@ -30,7 +30,7 @@ $.getJSON("https://ffbodata.neuronlp.fruitflybrain.org/" + "janelia.written.json
     }
     window.IOSynapses = realIOSynapses;
     window._neuGFX.mods.FlyBrainLab.loadSubmodule('data/FBLSubmodules/onMultilayerLoad.js'); 
-    window._neuGFX.mods.FlyBrainLab.loadSubmodule('data/FBLSubmodules/hexDraw.js'); 
+    // window._neuGFX.mods.FlyBrainLab.loadSubmodule('data/FBLSubmodules/hexDraw.js'); 
 });
 
 

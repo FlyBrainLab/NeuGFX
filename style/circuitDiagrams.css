@@ -22,12 +22,51 @@
 	stroke-width: 5;
 }
 
+.synapse_class.active{
+	stroke: #9ec026  !important;
+	stroke-width: 5;
+}
+
+.synapse_class.backactive{
+	opacity: 0.25  !important;
+}
+
+.edge.backactive{
+	opacity: 0.25  !important;
+}
+
+.neuron_class.backactive{
+	opacity: 0.25  !important;
+}
+
+.node.backactive{
+	opacity: 0.25  !important;
+}
+
 svg g.synapse_class:hover{
 	stroke: #9ec026  !important;
 	stroke-width: 5;
 }
 
-.default_class[inactive], .neuron_class[inactive]{
+svg g.edge:hover{
+	fill: #9ec026  !important;
+	stroke: #9ec026  !important;
+	stroke-width: 3;
+}
+
+svg g.edge{
+	stroke: #696969;
+	stroke-width: 1.5;
+}
+
+
+svg g.edge.active{
+	fill: #9ec026  !important;
+	stroke: #9ec026  !important;
+	stroke-width: 3;
+}
+
+.default_class[inactive], .neuron_class[inactive], .node[inactive]{
 	fill: #9ec026  !important;
 	stroke: #9ec026  !important;
 	opacity: 0.1;
@@ -43,14 +82,20 @@ svg g.synapse_class[inactive]{
 	opacity: 0.1;
 }
 
-.default_class:hover, .neuron_class:hover{
-fill: #9ec026  !important;
-stroke: #9ec026  !important;
+svg g.edge[inactive]{
+	stroke: #9ec026  !important;
+	opacity: 0.1;
 }
 
-.default_class.active, .neuron_class.active{
+.default_class:hover, .neuron_class:hover, .node:hover{
+	fill: #9ec026  !important;
+	stroke: #9ec026  !important;
+}
+
+.default_class.active, .neuron_class.active, .node.active{
 	fill: #c06b26  !important;
 	stroke: #c06b26  !important;
+	opacity: 0.75;
 }
 
 .header1 {

@@ -131,17 +131,17 @@ export class FlyBrainLab {
     addFBLPath(name, callback) {
         var previouslyExisting = false;
         var arrayLen = this.linkPathConfig.length;
-        for (var i = 0; i < arrayLen - 1; i++) {
+        for (var i = 0; i < arrayLen-1; i++) {
             if (previouslyExisting == false)
-                if (this.linkPathConfig[i].name == name) {
-                    console.log('Found ' + name + ", index: " + i);
-                    this.linkPathConfig = this.linkPathConfig.slice(0, i + 1);
-                    console.log(this.linkPathConfig);
-                    console.log(previouslyExisting);
-                    this.linkPathConfig[i].callback = callback;
-                    previouslyExisting = true;
-                    break;
-                }
+            if (this.linkPathConfig[i].name == name) {
+                console.log('Found ' + name + ", index: " + i);
+                this.linkPathConfig = this.linkPathConfig.slice(0, i+1);
+                console.log(this.linkPathConfig);
+                console.log(previouslyExisting);
+                this.linkPathConfig[i].callback = callback;
+                previouslyExisting = true;
+                break;
+            }
         }
         if (previouslyExisting == false) {
             var a = document.createElement('a');
@@ -155,7 +155,7 @@ export class FlyBrainLab {
             this.linkPathConfig.push({ name: name, callback: callback });
         }
         var _this = this;
-        setTimeout(function () { _this.updateFBLPath(); }, 50);
+        setTimeout(function(){_this.updateFBLPath();}, 50);
     }
 
     popFBLPath() {
@@ -170,7 +170,7 @@ export class FlyBrainLab {
         a.appendChild(linkText);
         a.href = "#";
         $('.fbl-path').append(a);
-        $(a).click(function () {
+        $(a).click( function () {
             window._neuGFX.mods.FlyBrainLab.loadFBLSVG('fly', function () { window._neuGFX.mods.FlyBrainLab.initializeFlyBrainSVG(); console.log("Submodule loaded.") });
         });
         //console.log("Link Path:", this.linkPathConfig);
@@ -495,7 +495,7 @@ export class FlyBrainLab {
     loadNewLPU() {
         $("svg g").each(function () {
             //console.log($(this).find('title').text());
-            if (($(this).find('title').text() === undefined) || ($(this).find('title').text().length == 0)) {
+            if (($(this).find('title').text() === undefined)||($(this).find('title').text().length == 0)) {
                 // console.log('Undefined'); 
                 // console.log($(this).find('title').text());
             }
@@ -558,7 +558,7 @@ export class FlyBrainLab {
             } else {
                 $(this).attr('inactive', 'true');
             }
-            try { window.updateCircuit(); } catch { };
+            try { window.updateCircuit();} catch {};
         });
 
         $('svg g.neuron_class,.neuron_class,.node').on('click', function () {
@@ -567,7 +567,7 @@ export class FlyBrainLab {
                 var neuron = $(this).attr('tooltip-data').split(' :: ')[0];
                 var a = {};
                 a[neuron] = true;
-                try { window.toggleByDiagramName(a, "true"); } catch { };
+                try { window.toggleByDiagramName(a, "true");} catch {};
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).removeAttr('inactive');
@@ -579,7 +579,7 @@ export class FlyBrainLab {
                 var neuron = $(this).attr('tooltip-data').split(' :: ')[0];
                 var a = {};
                 a[neuron] = true;
-                try { window.toggleByDiagramName(a, "false"); } catch { };
+                try { window.toggleByDiagramName(a, "false");} catch {};
                 $("svg g.synapse_class").each(function () {
                     if ($(this).attr("presyn") == neuron)
                         $(this).attr('inactive', 'true');
@@ -588,7 +588,7 @@ export class FlyBrainLab {
                 });
 
             }
-            try { window.updateCircuit(); } catch { };
+            try { window.updateCircuit();} catch {};
         });
         setTimeout(function () {
             $('.default_class, .synapse_class, .neuron_class').qtip({

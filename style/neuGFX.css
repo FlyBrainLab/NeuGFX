@@ -11,25 +11,24 @@
 }
 
 .fbl-info-container{
-    width: 15%;
+    width: 96%;
     position: absolute;
-    left: 15%;
-    margin-left: -12.5%;
-    top: 10%;
+    left: 2%;
+    top: 7%;
     z-index: 1;
     border-radius: 3px;
-    background: #73ad217d;
+    background: #73ad21e6;
     padding-left: 8px;
     font-size: 18px;
 }
 
 .fbl-info-container h4{
-    font-size: 14px;
+    font-size: 24px;
     color: #cfeac2;
 }
 
 .fbl-info-container p{
-    font-size: 12px;
+    font-size: 18px;
     color: #f0f5ee;
 }
 

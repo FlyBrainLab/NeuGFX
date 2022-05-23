@@ -1,6 +1,6 @@
 
-window.fbl.circuitName = 'X';
-window.IOName = 'X';
+window.fbl.circuitName = 'antenna';
+window.IOName = 'Antenna';
 
 window.sendExperimentConfig = function () {
     var experimentConfig = JSON.stringify(window._neuGFX.mods.FlyBrainLab.experimentConfig);
@@ -12,7 +12,7 @@ if (typeof window.IOData !== 'undefined') {
 else
 {
     window.IOData = {
-        inputs: [],
+        inputs: ["Ir31a", "Ir41a", "Ir64a.DC4", "Ir64a.DP1m", "Ir75a", "Ir75d", "Ir76a", "Ir84a", "Ir92a", "Or1a", "Or2a", "Or7a", "Or9a", "Or10a", "Or13a", "Or19a", "Or22a", "Or22b", "Or23a", "Or30a", "Or33a", "Or33b", "Or33c", "Or35a", "Or42a", "Or42b", "Or43a", "Or43b", "Or45a", "Or45b", "Or46a", "Or47a", "Or47b", "Or49a", "Or49b", "Or59a", "Or59b", "Or59c", "Or65a", "Or67a", "Or67b", "Or67c", "Or69a", "Or71a", "Or74a", "Or82a", "Or83c", "Or85a", "Or85b", "Or85c", "Or85d", "Or85e", "Or85f", "Or88a", "Or92a", "Or94a", "Or94b", "Or98a"],
         outputs: []
     };
 }

@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import Plotly from 'plotly.js/dist/plotly';
+// import Plotly from 'plotly.js/dist/plotly';
 import * as iziToast from "izitoast";
 
 import '../style/GFXPlotter.css';

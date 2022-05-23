@@ -9,6 +9,9 @@ module.exports = {
   watch: true,
   plugins: [
     new webpack.ProvidePlugin({
+      process: 'process/browser.js',
+    }),
+    new webpack.ProvidePlugin({
       $: 'jquery'
     }),
     new webpack.optimize.LimitChunkCountPlugin({
