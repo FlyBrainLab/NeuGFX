@@ -45,7 +45,7 @@
     "sigma": "^1.2.1",
     "stats.js": "^0.17.0",
     "svg-pan-zoom": "^3.5.3",
-    "three": "^0.93.0",
+    "three": "^0.125.0",
     "util": "^0.12.4"
   },
   "devDependencies": {
