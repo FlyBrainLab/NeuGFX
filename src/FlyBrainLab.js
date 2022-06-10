@@ -16,7 +16,7 @@ export class FlyBrainLab {
         this.circuitContent = {};
         this.linkPathConfig = [];
         this.CircuitOptions = {
-            database: 'https://data.flybrainlab.fruitflybrain.org/data/',
+            database: 'data/diagrams/',
             url: 'FITest',
             neuronColor: "#bbc7a4",
             synapseColor: '#E75A7C',

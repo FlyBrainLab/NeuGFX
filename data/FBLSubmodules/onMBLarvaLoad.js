@@ -101,7 +101,7 @@ window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPloadTag', tag: "m
 
 
 
-$.getJSON("https://data.flybrainlab.fruitflybrain.org/mb_gfx_correlates.json", function (data) {
+$.getJSON("data/resources/mb_gfx_correlates.json", function (data) {
     window.bioMatches = data;
     window.bioWorkspace = [];
     for (var i = 0; i < bioMatches[1].length; i++) {

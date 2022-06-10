@@ -31,7 +31,7 @@ if (typeof window.correlates_file !== 'undefined') {
     }
 }
 else {      
-    $.getJSON('https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json', function (data) {
+    $.getJSON('data/resources/cx_gfx_correlates.json', function (data) {
         window.correlates_file = data;
         window.bioMatches = data;
         window.bioWorkspace = [];

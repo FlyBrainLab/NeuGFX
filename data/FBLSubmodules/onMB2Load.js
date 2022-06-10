@@ -1,4 +1,4 @@
-$.getJSON("https://ffbodata.neuronlp.fruitflybrain.org/" + "diagram_struct.json", function(json) {
+$.getJSON("data/resources/diagram_struct.json", function(json) {
     window.visualCircuit = json;
     window.IOLayers = ['Neuropils', 'MB'];
     window.IOLayerData = {};

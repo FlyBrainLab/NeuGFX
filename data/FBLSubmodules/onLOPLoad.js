@@ -1,4 +1,4 @@
-$.getJSON("https://ffbodata.neuronlp.fruitflybrain.org/" + "janelia.written.json", function(json) {
+$.getJSON("data/resources/janelia.written.json", function(json) {
     window.visualCircuit = json;
     window.IOLayers = ['retina', 'lamina', 'medulla', 'lobulaplate'];
     window.IOLayerData = {};

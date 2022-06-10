@@ -531,7 +531,7 @@ window.reloadNeurons3D = function () {
     window._neuGFX.mods.FlyBrainLab.sendMessage({ messageType: 'NLPaddByUname', uname: uname });
 }
 
-$.getJSON("https://data.flybrainlab.fruitflybrain.org/cx_gfx_correlates.json", function (data) {
+$.getJSON("data/resources/cx_gfx_correlates.json", function (data) {
     window.bioMatches = data;
     window.bioWorkspace = [];
 
