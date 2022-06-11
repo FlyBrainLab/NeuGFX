@@ -6,7 +6,7 @@ module.exports = {
   mode: 'development',
   entry: './index.js',
   target: 'web',
-  watch: true,
+  watch: false,
   plugins: [
     new webpack.ProvidePlugin({
       process: 'process/browser.js',
